@@ -1,0 +1,11 @@
+{application,tic_tac_toe,
+             [{applications,[kernel,stdlib,elixir,logger]},
+              {description,"tic_tac_toe"},
+              {modules,['Elixir.TicTacToe','Elixir.TicTacToe.Application',
+                        'Elixir.TicTacToe.Board',
+                        'Elixir.TicTacToe.Coordinate',
+                        'Elixir.TicTacToe.WinningSets']},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {extra_applications,[logger]},
+              {mod,{'Elixir.TicTacToe.Application',[]}}]}.

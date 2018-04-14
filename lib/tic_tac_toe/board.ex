@@ -4,9 +4,25 @@ defmodule TicTacToe.Board do
   defstruct [:x, :o, :avail]
 
   def new(board_size) do
-    available_coordinates = add_coordinates(board_size)
-    %Board{x: MapSet.new, o: MapSet.new, avail: available_coordinates}
+    case add_coordinates(board_size) do
+      {:error, :invalid_coordinate} -> {:error, "invalid board size"}
+
+      available_coordinates ->
+        {
+          :ok,
+          %Board{x: MapSet.new, o: MapSet.new, avail: available_coordinates}
+        }
+
+    end
   end
+
+  def place_mark(board, :x, %Coordinate{} = coord) do
+
+  end
+
+  # def place_mark(:o, %Coordinate{} = coord) do
+  #
+  # end
 
   defp add_coordinates(board_size) do
     rows = 1..board_size
@@ -20,7 +36,7 @@ defmodule TicTacToe.Board do
 
   defp add_column(_, 0, map_set), do: {:ok, map_set}
   defp add_column(row, size, map_set) do
-    case add_coordinate(row, size - row + 1, map_set) do
+    case add_coordinate(row, size, map_set) do
       {:ok, new_map_set} -> add_column(row, size - 1, new_map_set)
       {:error, _} = err -> err
     end

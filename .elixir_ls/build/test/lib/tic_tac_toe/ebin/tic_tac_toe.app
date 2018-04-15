@@ -4,6 +4,7 @@
               {modules,['Elixir.TicTacToe','Elixir.TicTacToe.Application',
                         'Elixir.TicTacToe.Board',
                         'Elixir.TicTacToe.Coordinate',
+                        'Elixir.TicTacToe.GameStateM',
                         'Elixir.TicTacToe.WinningSets']},
               {registered,[]},
               {vsn,"0.1.0"},

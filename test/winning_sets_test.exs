@@ -10,20 +10,21 @@ defmodule WinningSetsTest do
     end
   end
 
+  def coord(r, c) do
+    {:ok, coord} = Coordinate.new(r, c)
+    coord
+  end
+
   def winning_sets do
-    coordinate = fn r, c ->
-      {:ok, coord} = Coordinate.new(r, c)
-      coord
-    end
     [
-      MapSet.new([coordinate.(1, 1), coordinate.(1, 2), coordinate.(1, 3)]),
-      MapSet.new([coordinate.(2, 1), coordinate.(2, 2), coordinate.(2, 3)]),
-      MapSet.new([coordinate.(3, 1), coordinate.(3, 2), coordinate.(3, 3)]),
-      MapSet.new([coordinate.(1, 1), coordinate.(2, 1), coordinate.(3, 1)]),
-      MapSet.new([coordinate.(1, 2), coordinate.(2, 2), coordinate.(3, 2)]),
-      MapSet.new([coordinate.(1, 3), coordinate.(2, 3), coordinate.(3, 3)]),
-      MapSet.new([coordinate.(1, 1), coordinate.(2, 2), coordinate.(3, 3)]),
-      MapSet.new([coordinate.(3, 1), coordinate.(2, 2), coordinate.(1, 3)])
+      MapSet.new([coord(1, 1), coord(1, 2), coord(1, 3)]),
+      MapSet.new([coord(2, 1), coord(2, 2), coord(2, 3)]),
+      MapSet.new([coord(3, 1), coord(3, 2), coord(3, 3)]),
+      MapSet.new([coord(1, 1), coord(2, 1), coord(3, 1)]),
+      MapSet.new([coord(1, 2), coord(2, 2), coord(3, 2)]),
+      MapSet.new([coord(1, 3), coord(2, 3), coord(3, 3)]),
+      MapSet.new([coord(1, 1), coord(2, 2), coord(3, 3)]),
+      MapSet.new([coord(3, 1), coord(2, 2), coord(1, 3)])
     ]
   end
 end

@@ -3,7 +3,7 @@
               {description,"tic_tac_toe"},
               {modules,['Elixir.TicTacToe','Elixir.TicTacToe.Application',
                         'Elixir.TicTacToe.Board',
-                        'Elixir.TicTacToe.Coordinate',
+                        'Elixir.TicTacToe.Coordinate','Elixir.TicTacToe.Game',
                         'Elixir.TicTacToe.GameStateM',
                         'Elixir.TicTacToe.WinningSets']},
               {registered,[]},

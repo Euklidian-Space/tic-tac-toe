@@ -1,8 +1,6 @@
 defmodule BoardTest do
   use ExUnit.Case
-  alias TicTacToe.{ Board, Coordinate, WinningSets }
-  @board_size 3
-  @winning_sets WinningSets.build(3)
+  alias TicTacToe.{ Board, Coordinate }
 
   describe "new/1" do
     test "should return new game board" do

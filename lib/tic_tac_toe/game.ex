@@ -1,23 +1,22 @@
 defmodule TicTacToe.Game do
-  alias TicTacToe.{Board, Game, WinningSets, GameStateM}
-  
-  defstruct board: nil, winning_sets: nil, state_machine: nil
+  alias TicTacToe.{Board, Game, GameStateM}
 
-  def new(board_size) do
-    {:ok, board} = Board.new(board_size)
+  defstruct board: nil, state_machine: nil
+
+  def new() do
+    {:ok, board} = Board.new()
     {
       :ok,
       %Game{
         board: board,
-        winning_sets: WinningSets.build(board_size),
         state_machine: GameStateM.new()
       }
     }
   end
 
-  def start_link(board_size) do
+  def start_link() do
     Agent.start_link(fn ->
-      {:ok, game} = new(board_size)
+      {:ok, game} = new()
       game
     end)
   end

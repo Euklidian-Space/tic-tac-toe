@@ -1,15 +1,21 @@
 defmodule TicTacToe.Board do
-  alias TicTacToe.{ Coordinate, Board }
-  @enforce_keys [:x, :o, :avail ]
+  alias TicTacToe.{ Coordinate, Board, WinningSets }
+  @enforce_keys [:x, :o, :avail, :winning_sets]
   @size 3
-  defstruct [:x, :o, :avail]
+  defstruct [:x, :o, :avail, :winning_sets]
 
-  def new(board_size) when board_size != @size, do:
-    {:error, "invalid board size"}
 
-  def new(board_size) do
-    available_coordinates = add_coordinates(board_size)
-    {:ok, %Board{x: MapSet.new, o: MapSet.new, avail: available_coordinates}}
+  def new() do
+    available_coordinates = add_coordinates(@size)
+    {
+      :ok,
+      %Board{
+        x: MapSet.new,
+        o: MapSet.new,
+        avail: available_coordinates,
+        winning_sets: WinningSets.build(@size)
+        }
+      }
   end
 
   def place_mark(board, :x, %Coordinate{} = coord) do
@@ -53,14 +59,14 @@ defmodule TicTacToe.Board do
     not MapSet.member?(board.avail, coord)
 
   defp chk_win(board, :x) do
-    Enum.any?(winning_sets(), fn winning_set ->
+    Enum.any?(board.winning_sets, fn winning_set ->
       MapSet.subset?(winning_set, board.x)
     end)
     |> win?
   end
 
   defp chk_win(board, :o) do
-    Enum.any?(winning_sets(), fn winning_set ->
+    Enum.any?(board.winning_sets, fn winning_set ->
       MapSet.subset?(winning_set, board.o)
     end)
     |> win?
@@ -68,9 +74,5 @@ defmodule TicTacToe.Board do
 
   defp win?(true), do: :win
   defp win?(false), do: :no_win
-
-  defp winning_sets do
-    TicTacToe.WinningSets.build(@size)
-  end
 
 end

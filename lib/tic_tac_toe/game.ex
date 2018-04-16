@@ -18,9 +18,20 @@ defmodule TicTacToe.Game do
     end)
   end
 
-  # def place_mark(x, y) when is_integer(x) and is_integer(y) do
-  #
-  # end
+  def place_mark(game, x, y)
+  when is_integer(x) and is_integer(y) and is_pid(game)
+  do
+    game_state = get_state(game)
+    with {:ok, coord} <- Coordinate.new(x, y),
+         {:ok, _chk_win, board} <- Board.place_mark(game_state.board, :x, coord),
+         {:ok, state_machine} <-
+           GameStateM.check(game_state.state_machine, {:mark, :player1}),
+    do:
+      Agent.get_and_update(game, fn %Game{} = state ->
+        new_state = %Game{state | board: board, state_machine: state_machine}
+        {{:ok, board, game}, new_state}
+      end)
+  end
 
   defp new() do
     {:ok, board} = Board.new()
@@ -32,5 +43,8 @@ defmodule TicTacToe.Game do
       }
     }
   end
+
+  defp get_state(game) when is_pid(game), do:
+    Agent.get(game, &(&1))
 
 end

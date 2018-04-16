@@ -1,6 +1,6 @@
 defmodule GameTest do
   use ExUnit.Case
-  alias TicTacToe.{Game, Board, GameStateM}
+  alias TicTacToe.{Game, Board, GameStateM, Coordinate}
 
   setup  do
     {:ok, agent} = Game.start_link()
@@ -29,16 +29,25 @@ defmodule GameTest do
     end
   end
 
-  # describe "place_mark/2" do
-  #   setup %{game_agent: agent} do
-  #     {:ok, %Board{} = board} = Game.place_mark(1, 2)
-  #   end
-  #
-  #   test "should return the game board and update game state" do
-  #
-  #   end
-  # end
+  describe "place_mark/3" do
+    setup %{game_agent: agent} do
+      Game.start_game(agent)
+      {:ok, %Board{} = board, _pid} = Game.place_mark(agent, 1, 2)
+      {:ok, %{board: board}}
+    end
+
+    test "should return the game board and update game state", %{game_agent: agent, board: board} do
+      assert MapSet.member?(board.x, coord(1, 2))
+      %Game{state_machine: %GameStateM{state: state}} = get_state(agent)
+      assert state == :player2_turn
+    end
+  end
 
   defp get_state(agent), do: Agent.get(agent, &(&1))
+
+  defp coord(x, y) do
+    {:ok, coord} = Coordinate.new(x, y)
+    coord
+  end
 
 end

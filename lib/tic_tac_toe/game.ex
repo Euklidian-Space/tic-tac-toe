@@ -34,6 +34,7 @@ defmodule TicTacToe.Game do
         _otherwise -> control_to_player2(game_state, game)
       end
     end
+    
   end
 
   defp new() do

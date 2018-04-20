@@ -1,6 +1,6 @@
 defmodule GameTest do
   use ExUnit.Case
-  alias TicTacToe.{Game, Board, Rules, Coordinate}
+  alias TicTacToe.{Game, Board, Rules}
   import TicTacToe.TestHelpers
 
   setup  do
@@ -45,7 +45,7 @@ defmodule GameTest do
 
     test "if mark is a win, then rules state should be :game_over" do
       agent = create_winable_game()
-      assert {:ok, %Game{rules: sm}, _game_pid} = Game.place_mark(agent, 3, 1)
+      assert {:ok, %Game{rules: sm}, _game_pid} = Game.place_mark(agent, 3, 3)
       assert sm.state == :game_over
     end
 
@@ -54,12 +54,6 @@ defmodule GameTest do
     do
       assert {:error, :invalid_coordinate} = Game.place_mark(agent, 10, 1)
     end
-
-    # test "if called when state machine is :player2_turn should return error tuple",
-    # %{game_agent: ga}
-    # do
-    #   assert {:error, "The turn belongs to player 2."} = Game.place_mark(ga, 1, 1)
-    # end
 
     test "should alternate between player1_turn and player2_turn if not a winning mark",
     %{game_agent: pid}
@@ -80,11 +74,10 @@ defmodule GameTest do
   defp get_state(agent), do: Agent.get(agent, &(&1))
 
   defp create_winable_game do
-    coords = [coord(1,1), coord(2,1)]
-    {:ok, board} = Board.new
-    board = Enum.reduce(coords, board, fn coord, b ->
-      %Board{b | x: MapSet.put(b.x, coord)}
-    end)
+    board = %{
+      o_coords: [coord(1,1), coord(1,2)],
+      x_coords: [coord(3,1), coord(3,2)]
+    } |> create_board
     sm = %Rules{state: :player1_turn}
     {:ok, game} = Agent.start_link(fn -> %Game{board: board, rules: sm} end)
     game

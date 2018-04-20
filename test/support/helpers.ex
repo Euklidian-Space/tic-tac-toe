@@ -1,7 +1,7 @@
 defmodule TicTacToe.TestHelpers do
   alias TicTacToe.{Board, Coordinate}
-  
-  def create_winable_board(%{o_coords: os, x_coords: xs}) do
+
+  def create_board(%{o_coords: os, x_coords: xs}) do
     {:ok, board} = Board.new
     board = Enum.reduce(os, board, fn coord, b ->
       {:ok, _, n_board} = Board.place_mark(b, :o, coord)

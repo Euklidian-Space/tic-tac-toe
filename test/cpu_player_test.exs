@@ -9,37 +9,34 @@ defmodule CpuPlayerTest do
         o_coords: [coord(1,3), coord(3,3)],
         x_coords: [coord(1,1), coord(2,2)]
       }
-      |> create_winable_board
+      |> create_board
 
       assert {:ok, %Coordinate{row: r, col: c}} = CpuPlayer.get_move(board, :x)
       assert {r, c} == {2, 3}
-
-      # assert {:ok, %Coordinate{row: r, col: c}} = CpuPlayer.get_move(board, :o)
-      # assert {r, c} == {2, 3}
     end
 
-    test "should prefer a trapping move scenario 1" do
-      %{
-        o_coords: [coord(1,2), coord(3,3)],
-        x_coords: [coord(1,1), coord(2,2)]
+    test "should take a win" do
+      board = %{
+        o_coords: [coord(1,1), coord(3,1)],
+        x_coords: [coord(3,3), coord(2,2)]
       }
-      |> create_winable_board
-      |> CpuPlayer.get_move(:x)
-      |> (fn {:ok, %Coordinate{row: r, col: c}} ->
-        assert {r, c} in [{2, 1}, {3, 1}]
-      end).()
+      |> create_board
+
+      assert {:ok, %Coordinate{row: r, col: c}} = CpuPlayer.get_move(board, :o)
+      assert {r, c} == {2, 1}
     end
 
-    test "should prefer a trapping move scenario 2" do
-      %{
-        o_coords: [coord(1, 2), coord(3, 1)],
-        x_coords: [coord(2, 2), coord(1, 3)]
+    test "should avoid a potential trap" do
+      board = %{
+        o_coords: [coord(2,1)],
+        x_coords: [coord(1,2), coord(3,3)]
       }
-      |> create_winable_board
-      |> CpuPlayer.get_move(:x)
-      |> (fn {:ok, %Coordinate{row: r, col: c}} ->
-        assert {r, c} in [{2, 3}, {3,3}]
-      end).()
+      |> create_board
+
+      assert {:ok, %Coordinate{row: r, col: c}} = CpuPlayer.get_move(board, :o)
+      IO.inspect {r, c}
+      refute {r, c} in [{1,3}, {2,3}]
     end
+
   end
 end

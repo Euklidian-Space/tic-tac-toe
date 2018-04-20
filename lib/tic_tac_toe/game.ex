@@ -20,10 +20,10 @@ defmodule TicTacToe.Game do
   def place_mark(game, x, y)
   when is_integer(x) and is_integer(y) and is_pid(game) do
 
-    with {:ok, win_or_loss, %Game{} = game_state}
+    with {:ok, win_or_not, %Game{} = game_state}
            <- do_place_mark(game, x, y),
          {:ok, %Game{state_machine: sm} = game_state}
-           <- chk_win(game_state, win_or_loss)
+           <- chk_win(game_state, win_or_not)
     do
       case sm.state do
         :game_over ->
@@ -34,7 +34,7 @@ defmodule TicTacToe.Game do
         _otherwise -> control_to_player2(game_state, game)
       end
     end
-    
+
   end
 
   defp new() do
@@ -62,11 +62,11 @@ defmodule TicTacToe.Game do
   defp do_place_mark(game, x, y) do
     game_state = get_state(game)
     with {:ok, coord} <- Coordinate.new(x, y),
-         {:ok, win_or_loss, board}
+         {:ok, win_or_not, board}
            <- Board.place_mark(game_state.board, :x, coord)
     do
       new_game_state = %Game{game_state | board: board}
-      {:ok, win_or_loss, new_game_state}
+      {:ok, win_or_not, new_game_state}
     end
   end
 

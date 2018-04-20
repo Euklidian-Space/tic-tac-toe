@@ -37,8 +37,7 @@ defmodule TicTacToe.CpuPlayer do
   end
 
   defp get_score(:win, :x, coord, _), do: [{coord, 10}]
-  defp get_score(:no_win, :x, _, func), do: func.()
   defp get_score(:win, :o, coord, _), do: [{coord, -10}]
-  defp get_score(:no_win, :o, _, func), do: func.()
+  defp get_score(:no_win, _, _, func), do: func.()
 
 end

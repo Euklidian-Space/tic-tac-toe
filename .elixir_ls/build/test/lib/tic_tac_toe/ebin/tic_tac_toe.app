@@ -5,7 +5,7 @@
                         'Elixir.TicTacToe.Board',
                         'Elixir.TicTacToe.Coordinate',
                         'Elixir.TicTacToe.CpuPlayer','Elixir.TicTacToe.Game',
-                        'Elixir.TicTacToe.GameStateM',
+                        'Elixir.TicTacToe.Rules',
                         'Elixir.TicTacToe.TestHelpers',
                         'Elixir.TicTacToe.WinningSets']},
               {registered,[]},

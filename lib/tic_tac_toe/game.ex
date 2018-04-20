@@ -1,7 +1,7 @@
 defmodule TicTacToe.Game do
-  alias TicTacToe.{Board, Game, GameStateM, Coordinate}
-  @enforce_keys [:board, :state_machine]
-  defstruct [:board, :state_machine]
+  alias TicTacToe.{Board, Game, Rules, Coordinate}
+  @enforce_keys [:board, :rules]
+  defstruct [:board, :rules]
 
   def start_link() do
     Agent.start_link(fn ->
@@ -11,9 +11,9 @@ defmodule TicTacToe.Game do
   end
 
   def start_game(game) when is_pid(game) do
-    %Game{state_machine: state_machine} = current_state = get_state(game)
-    {:ok, state_machine} = GameStateM.check(state_machine, :add_player)
-    new_state = update_game(game, current_state, [state_machine: state_machine])
+    %Game{rules: rules} = current_state = get_state(game)
+    {:ok, rules} = Rules.check(rules, :add_player)
+    new_state = update_game(game, current_state, [rules: rules])
     {:ok, new_state, game}
   end
 
@@ -22,13 +22,13 @@ defmodule TicTacToe.Game do
 
     with {:ok, win_or_not, %Game{} = game_state}
            <- do_place_mark(game, x, y),
-         {:ok, %Game{state_machine: sm} = game_state}
+         {:ok, %Game{rules: sm} = game_state}
            <- chk_win(game_state, win_or_not)
     do
       case sm.state do
         :game_over ->
           new_state =
-            update_game(game, game_state, [state_machine: sm])
+            update_game(game, game_state, [rules: sm])
           {:ok, new_state, game}
 
         _otherwise -> control_to_player2(game_state, game)
@@ -43,7 +43,7 @@ defmodule TicTacToe.Game do
       :ok,
       %Game{
         board: board,
-        state_machine: GameStateM.new()
+        rules: Rules.new()
       }
     }
   end
@@ -70,22 +70,29 @@ defmodule TicTacToe.Game do
     end
   end
 
-  defp chk_win(%Game{state_machine: sm} = game_state, :win) do
-    with {:ok, state_machine} <- GameStateM.check(sm, {:chk_win, :win}),
-    do: {:ok, %Game{game_state | state_machine: state_machine}}
+  defp chk_win(%Game{rules: sm} = game_state, :win) do
+    with {:ok, rules} <- Rules.check(sm, {:chk_win, :win}),
+    do: {:ok, %Game{game_state | rules: rules}}
   end
 
-  defp chk_win(%Game{state_machine: sm} = game_state, :no_win) do
-    with {:ok, state_machine} <- GameStateM.check(sm, {:chk_win, :no_win}),
-    do: {:ok, %Game{game_state | state_machine: state_machine}}
+  defp chk_win(%Game{rules: sm} = game_state, :no_win) do
+    with {:ok, rules} <- Rules.check(sm, {:chk_win, :no_win}),
+    do: {:ok, %Game{game_state | rules: rules}}
   end
 
-  defp control_to_player2(%Game{state_machine: sm} = game_state, game)
+  defp next_player(%Game{rules: sm} = current_game_state, game) do
+    case sm.state do
+      :player1_turn -> control_to_player2(current_game_state, game)
+      :player2_turn -> control_to_player1(current_game_state, game)
+    end
+  end
+
+  defp control_to_player2(%Game{rules: sm} = game_state, game)
   when is_pid(game) do
-    with {:ok, new_state_machine} <- GameStateM.check(sm, {:mark, :player1})
+    with {:ok, new_rules} <- Rules.check(sm, {:mark, :player1})
     do
       new_state =
-        update_game(game, game_state, [state_machine: new_state_machine])
+        update_game(game, game_state, [rules: new_rules])
       {:ok, new_state, game}
     else
       :error -> {:error, "The turn belongs to player 2."}

@@ -34,7 +34,6 @@ defmodule CpuPlayerTest do
       |> create_board
 
       assert {:ok, %Coordinate{row: r, col: c}} = CpuPlayer.get_move(board, :o)
-      IO.inspect {r, c}
       refute {r, c} in [{1,3}, {2,3}]
     end
 

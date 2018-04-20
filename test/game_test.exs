@@ -4,17 +4,27 @@ defmodule GameTest do
   import TicTacToe.TestHelpers
 
   setup  do
-    {:ok, agent} = Game.start_link()
+    {:ok, agent} = Game.start()
     {:ok, %{game_agent: agent}}
   end
 
-  describe "start_link/0" do
+  describe "start/0" do
     test "should start an agent with correct state", %{game_agent: agent} do
       assert is_pid(agent)
       assert %{
         board: %Board{},
         rules: %Rules{} = rules
       } = get_state(agent)
+
+      assert rules.state == :initialized
+    end
+
+    test "should start a process named Game" do
+      assert is_pid(Game)
+      assert %{
+        board: %Board{},
+        rules: %Rules{} = rules
+      } = get_state(Game)
 
       assert rules.state == :initialized
     end

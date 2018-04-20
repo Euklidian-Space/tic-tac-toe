@@ -3,23 +3,23 @@ defmodule TicTacToe.Game do
   @enforce_keys [:board, :rules]
   defstruct [:board, :rules]
 
-  def start_link() do
-    Agent.start_link(fn ->
+  def start() do
+    Agent.start(fn ->
       {:ok, game} = new()
       game
-    end)
+    end, name: __MODULE__)
   end
 
-  def start_game(game) when is_pid(game) do
-    %Game{rules: rules} = current_state = get_state(game)
+  def start_game do
+    %Game{rules: rules} = current_state = get_state(__MODULE__)
     {:ok, rules} = Rules.check(rules, :add_player)
-    new_state = update_game(game, current_state, [rules: rules])
-    {:ok, new_state, game}
+    new_state = update_game(__MODULE__, current_state, [rules: rules])
+    {:ok, new_state}
   end
 
-  def place_mark(game, x, y)
-  when is_integer(x) and is_integer(y) and is_pid(game) do
-    game_state = get_state(game)
+  def place_mark(x, y)
+  when is_integer(x) and is_integer(y) do
+    game_state = get_state(__MODULE__)
     with {:ok, win_or_not, %Game{} = game_state}
            <- do_place_mark(game_state, x, y),
          {:ok, %Game{rules: rules} = game_state}
@@ -27,10 +27,10 @@ defmodule TicTacToe.Game do
     do
       case rules.state do
         :game_over ->
-          new_state = update_game(game, game_state, [rules: rules])
-          {:ok, new_state, game}
+          new_state = update_game(__MODULE__, game_state, [rules: rules])
+          {:ok, new_state}
 
-        _otherwise -> next_player(game_state, game)
+        _otherwise -> next_player(game_state, __MODULE__)
       end
     end
 
@@ -47,7 +47,7 @@ defmodule TicTacToe.Game do
     }
   end
 
-  defp get_state(game) when is_pid(game), do:
+  defp get_state(game) when is_atom(game), do:
     Agent.get(game, &(&1))
 
   defp update_game(game, %Game{} = current_state, updates) do
@@ -93,7 +93,7 @@ defmodule TicTacToe.Game do
   end
 
   defp control_to_next_player(%Game{rules: rules} = game_state, game, player)
-  when is_pid(game) do
+  when is_atom(game) do
     with {:ok, new_rules} <- Rules.check(rules, {:mark, player})
     do
       new_state =

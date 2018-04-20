@@ -3,9 +3,10 @@ defmodule TicTacToe.Game do
   @enforce_keys [:board, :rules]
   defstruct [:board, :rules]
 
+  @moduledoc false
   def start() do
     Agent.start(fn ->
-      {:ok, game} = new()
+      {:ok, %Game{} = game} = new()
       game
     end, name: __MODULE__)
   end
@@ -15,6 +16,13 @@ defmodule TicTacToe.Game do
     {:ok, rules} = Rules.check(rules, :add_player)
     new_state = update_game(__MODULE__, current_state, [rules: rules])
     {:ok, new_state}
+  end
+
+  def reset_game do
+    Agent.update(Game, fn _ ->
+      {:ok, %Game{} = game} = new()
+      game
+    end)
   end
 
   def place_mark(x, y)
@@ -98,7 +106,7 @@ defmodule TicTacToe.Game do
     do
       new_state =
         update_game(game, game_state, [rules: new_rules])
-      {:ok, new_state, game}
+      {:ok, new_state}
     end
   end
 

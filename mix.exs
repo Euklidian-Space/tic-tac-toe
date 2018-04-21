@@ -6,6 +6,7 @@ defmodule TicTacToe.MixProject do
       app: :tic_tac_toe,
       version: "0.1.0",
       elixir: "~> 1.6",
+      escript: escript_config(),
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env),
       deps: deps()
@@ -26,6 +27,10 @@ defmodule TicTacToe.MixProject do
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
+  end
+
+  defp escript_config do
+    [main_module: TicTacToe.CLI]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]

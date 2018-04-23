@@ -1,5 +1,7 @@
 defmodule TicTacToe.CpuPlayer do
   alias TicTacToe.Board
+  @initial_best_x 20
+  @initial_best_o -20
 
   def get_move(%Board{} = board, x_or_o) do
     choose_profitable_move(board, [], x_or_o)

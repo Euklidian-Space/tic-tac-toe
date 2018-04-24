@@ -2,7 +2,7 @@
 
 ##Instructions
 
-In order to run the tic tac toe game just clone and run
+In order to run the tic tac toe game you must have elixir or erlang installed.  Once you do clone this repo and run the command
 
 mix escript.build
 

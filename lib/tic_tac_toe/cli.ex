@@ -46,24 +46,26 @@ defmodule TicTacToe.CLI do
     {:ok, state} = Game.start_game()
     print_board(state)
     game_loop(state, :no_bot)
-    prompt_restart()
+    |> end_message()
+    |> prompt_restart()
   end
 
   defp start_game(:with_bot) do
     {:ok, state} = Game.start_game()
     print_board(state)
     game_loop(state, :with_bot)
-    prompt_restart()
+    |> end_message
+    |> prompt_restart()
   end
 
   defp game_loop(%Game{winner: :player1}, _),
-  do: IO.puts win_msg(:player1)
+  do: {:winner, :player1}
 
   defp game_loop(%Game{winner: :player2}, _),
-  do: IO.puts win_msg(:player2)
+  do: {:winner, :player2}
 
   defp game_loop(%Game{rules: %{state: :game_over}}, _),
-  do: IO.puts tie_msg()
+  do: {:tie, tie_msg()}
 
   defp game_loop(%Game{} = game_state, :with_bot) do
     with {:ok, new_state}
@@ -76,6 +78,8 @@ defmodule TicTacToe.CLI do
       {:error, message} ->
         IO.puts message
         game_loop(game_state, :with_bot)
+
+      {:exit, message} -> {:exit, message}
     end
   end
 
@@ -88,10 +92,30 @@ defmodule TicTacToe.CLI do
       {:error, message} ->
         IO.puts message
         game_loop(game_state, :no_bot)
+
+      {:exit, message} -> IO.puts message
     end
   end
 
-  defp prompt_restart do
+  defp end_message(end_state) do
+    case end_state do
+      {:winner, :player1} ->
+        IO.puts win_msg(:player1)
+        :ok
+      {:winner, :player2} ->
+        IO.puts win_msg(:player2)
+        :ok
+      {:tie, message} ->
+        IO.puts message
+        :ok
+      {:exit, message} ->
+        IO.puts message
+        :pass
+    end
+  end
+
+  defp prompt_restart(:pass), do: :ok
+  defp prompt_restart(:ok) do
     IO.gets("Play again? (y/n)")
     |> String.trim
     |> String.downcase
@@ -103,7 +127,7 @@ defmodule TicTacToe.CLI do
       "n" ->
         IO.puts "Goodbye!\n"
       _ ->
-        prompt_restart()
+        prompt_restart(:ok)
     end
   end
 
@@ -114,7 +138,7 @@ defmodule TicTacToe.CLI do
     |> String.downcase
   end
 
-  defp execute_command("quit", _arg2), do: IO.puts "Goodbye!\n\n"
+  defp execute_command("quit", _arg2), do: {:exit, "Goodbye!\n\n"}
 
   defp execute_command(square, %Game{}) do
     with {:ok, %Game{} = new_state}

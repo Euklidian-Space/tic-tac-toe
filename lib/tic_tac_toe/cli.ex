@@ -1,9 +1,10 @@
 defmodule TicTacToe.CLI do
-  alias TicTacToe.{Board, Game, CpuPlayer, TextGraphics, Coordinate}
+  alias TicTacToe.{Game, CpuPlayer, TextGraphics, Coordinate}
+  alias TicTacToe.CLI.Messages
 
   def main(_args) do
-    IO.puts welcome_msg()
-    demo()
+    Messages.welcome_msg()
+    Messages.demo()
     setup()
     |> start_game
   end
@@ -21,41 +22,26 @@ defmodule TicTacToe.CLI do
     end
   end
 
-  defp demo do
-    {:ok, board} = Board.new
-    {:ok, coord} = Coordinate.new(1, 1)
-    {:ok, _, board} = Board.place_mark(board, :x, coord)
-    """
-    Spaces on the board are numbered 1 through 9 left to right and
-    top to bottom. For example enter the number 1.
-    """
-    |> IO.gets
-    IO.puts TextGraphics.draw_board(board)
-
-    IO.puts "The above board is the result."
-    IO.gets("Press enter to continue with the demo\n\n")
-
-    {:ok, coord} = Coordinate.new(2, 1)
-    {:ok, _, board} = Board.place_mark(board, :o, coord)
-
-    IO.puts TextGraphics.draw_board(board)
-    IO.puts "Now if player 2 entered 3 we would get the above board\n\n\n"
-  end
-
   defp start_game(:no_bot) do
     {:ok, state} = Game.start_game()
     print_board(state)
     game_loop(state, :no_bot)
-    |> end_message()
-    |> prompt_restart()
+    |> Messages.end_message()
+    |> Messages.prompt_restart(fn ->
+      Game.reset_game()
+      start_game(:no_bot)
+    end)
   end
 
   defp start_game(:with_bot) do
     {:ok, state} = Game.start_game()
     print_board(state)
     game_loop(state, :with_bot)
-    |> end_message
-    |> prompt_restart()
+    |> Messages.end_message()
+    |> Messages.prompt_restart(fn ->
+      Game.reset_game()
+      start_game(:with_bot)
+    end)
   end
 
   defp game_loop(%Game{winner: :player1}, _),
@@ -65,7 +51,7 @@ defmodule TicTacToe.CLI do
   do: {:winner, :player2}
 
   defp game_loop(%Game{rules: %{state: :game_over}}, _),
-  do: {:tie, tie_msg()}
+  do: :tie
 
   defp game_loop(%Game{} = game_state, :with_bot) do
     with {:ok, new_state}
@@ -79,7 +65,7 @@ defmodule TicTacToe.CLI do
         IO.puts message
         game_loop(game_state, :with_bot)
 
-      {:exit, message} -> {:exit, message}
+      :exit -> :exit
     end
   end
 
@@ -97,40 +83,6 @@ defmodule TicTacToe.CLI do
     end
   end
 
-  defp end_message(end_state) do
-    case end_state do
-      {:winner, :player1} ->
-        IO.puts win_msg(:player1)
-        :ok
-      {:winner, :player2} ->
-        IO.puts win_msg(:player2)
-        :ok
-      {:tie, message} ->
-        IO.puts message
-        :ok
-      {:exit, message} ->
-        IO.puts message
-        :pass
-    end
-  end
-
-  defp prompt_restart(:pass), do: :ok
-  defp prompt_restart(:ok) do
-    IO.gets("Play again? (y/n)")
-    |> String.trim
-    |> String.downcase
-    |> case  do
-      "y" ->
-        Game.reset_game()
-        setup()
-        |> start_game()
-      "n" ->
-        IO.puts "Goodbye!\n"
-      _ ->
-        prompt_restart(:ok)
-    end
-  end
-
   defp get_command(%Game{rules: rules}) do
     IO.puts rules.state
     IO.gets("\n> ")
@@ -138,7 +90,7 @@ defmodule TicTacToe.CLI do
     |> String.downcase
   end
 
-  defp execute_command("quit", _arg2), do: {:exit, "Goodbye!\n\n"}
+  defp execute_command("quit", _arg2), do: :exit
 
   defp execute_command(square, %Game{}) do
     with {:ok, %Game{} = new_state}
@@ -193,112 +145,4 @@ defmodule TicTacToe.CLI do
     end
   end
 
-  defp welcome_msg do
-    """
-      888       888          888                                              888
-      888   o   888          888                                              888
-      888  d8b  888          888                                              888
-      888 d888b 888  .d88b.  888  .d8888b .d88b.  88888b.d88b.   .d88b.       888888 .d88b.
-      888d88888b888 d8P  Y8b 888 d88P"   d88""88b 888 "888 "88b d8P  Y8b      888   d88""88b
-      88888P Y88888 88888888 888 888     888  888 888  888  888 88888888      888   888  888
-      8888P   Y8888 Y8b.     888 Y88b.   Y88..88P 888  888  888 Y8b.          Y88b. Y88..88P
-      888P     Y888  "Y8888  888  "Y8888P "Y88P"  888  888  888  "Y8888        "Y888 "Y88P"
-
-
-
-
-      88888888888 d8b                888                          88888888888
-          888     Y8P                888                              888
-          888                        888                              888
-          888     888  .d8888b       888888  8888b.   .d8888b         888   .d88b.   .d88b.
-          888     888 d88P"          888        "88b d88P"            888  d88""88b d8P  Y8b
-          888     888 888     888888 888    .d888888 888     888888   888  888  888 88888888
-          888     888 Y88b.          Y88b.  888  888 Y88b.            888  Y88..88P Y8b.
-          888     888  "Y8888P        "Y888 "Y888888  "Y8888P         888   "Y88P"   "Y8888
-
-
-
-    """
-  end
-
-  defp win_msg(:player1) do
-     """
-       .d8888b.                                             888
-      d88P  Y88b                                            888
-      888    888                                            888
-      888         .d88b.  88888b.   .d88b.  888d888 8888b.  888888 .d8888b
-      888        d88""88b 888 "88b d88P"88b 888P"      "88b 888    88K
-      888    888 888  888 888  888 888  888 888    .d888888 888    "Y8888b.
-      Y88b  d88P Y88..88P 888  888 Y88b 888 888    888  888 Y88b.       X88
-       "Y8888P"   "Y88P"  888  888  "Y88888 888    "Y888888  "Y888  88888P'
-                                        888
-                                   Y8b d88P
-                                    "Y88P"
-
-      8888888b.  888                                          d888        888
-      888   Y88b 888                                         d8888        888
-      888    888 888                                           888        888
-      888   d88P 888  8888b.  888  888  .d88b.  888d888        888        888
-      8888888P"  888     "88b 888  888 d8P  Y8b 888P"          888        888
-      888        888 .d888888 888  888 88888888 888            888        Y8P
-      888        888 888  888 Y88b 888 Y8b.     888            888         "
-      888        888 "Y888888  "Y88888  "Y8888  888          8888888      888
-                                   888
-                              Y8b d88P
-                               "Y88P"
-    """
-  end
-
-  defp win_msg(:player2) do
-    """
-    .d8888b.                                             888
-    d88P  Y88b                                            888
-    888    888                                            888
-    888         .d88b.  88888b.   .d88b.  888d888 8888b.  888888 .d8888b
-    888        d88""88b 888 "88b d88P"88b 888P"      "88b 888    88K
-    888    888 888  888 888  888 888  888 888    .d888888 888    "Y8888b.
-    Y88b  d88P Y88..88P 888  888 Y88b 888 888    888  888 Y88b.       X88
-    "Y8888P"   "Y88P"  888  888  "Y88888 888    "Y888888  "Y888  88888P'
-                                     888
-                                Y8b d88P
-                                 "Y88P"
-
-    8888888b.  888                                          .d8888b.       888
-    888   Y88b 888                                         d88P  Y88b      888
-    888    888 888                                                888      888
-    888   d88P 888  8888b.  888  888  .d88b.  888d888           .d88P      888
-    8888888P"  888     "88b 888  888 d8P  Y8b 888P"         .od888P"       888
-    888        888 .d888888 888  888 88888888 888          d88P"           Y8P
-    888        888 888  888 Y88b 888 Y8b.     888          888"             "
-    888        888 "Y888888  "Y88888  "Y8888  888          888888888       888
-                                888
-                           Y8b d88P
-                            "Y88P"
-    """
-  end
-
-  defp tie_msg do
-    """
-    88888888888 d8b
-        888     Y8P
-        888
-        888     888  .d88b.
-        888     888 d8P  Y8b
-        888     888 88888888
-        888     888 Y8b.
-        888     888  "Y8888
-
-
-
-
-     .d8888b.                                  888
-    d88P  Y88b                                 888
-    888    888                                 888
-    888         8888b.  88888b.d88b.   .d88b.  888
-    888  88888     "88b 888 "888 "88b d8P  Y8b 888
-    888    888 .d888888 888  888  888 88888888 Y8P
-    Y88b  d88P 888  888 888  888  888 Y8b.      "
-     "Y8888P88 "Y888888 888  888  888  "Y8888  888
-    """
-  end
 end

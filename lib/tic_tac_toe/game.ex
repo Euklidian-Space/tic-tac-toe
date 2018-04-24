@@ -26,7 +26,8 @@ defmodule TicTacToe.Game do
   end
 
   def place_mark(x, y)
-  when is_integer(x) and is_integer(y) do
+  when is_integer(x) and is_integer(y)
+  do
     game_state = get_state(__MODULE__)
     with {:ok, win_or_not, %Game{} = game_state}
            <- do_place_mark(game_state, x, y),

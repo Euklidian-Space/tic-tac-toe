@@ -1,7 +1,7 @@
 defmodule TicTacToe.CLI.Messages do
   alias TicTacToe.{Board, Coordinate, TextGraphics}
 
-  def demo(io \\ IO) do
+  def demo() do
     {:ok, board} = Board.new
     {:ok, coord} = Coordinate.new(1, 1)
     {:ok, _, board} = Board.place_mark(board, :x, coord)
@@ -9,17 +9,17 @@ defmodule TicTacToe.CLI.Messages do
     Spaces on the board are numbered 1 through 9 left to right and
     top to bottom. For example enter the number 1.
     """
-    |> io.gets
-    io.puts TextGraphics.draw_board(board)
+    |> IO.gets
+    IO.puts TextGraphics.draw_board(board)
 
-    io.puts "The above board is the result."
-    io.gets("Press enter to continue with the demo\n\n")
+    IO.puts "The above board is the result."
+    IO.gets("Press enter to continue with the demo\n\n")
 
     {:ok, coord} = Coordinate.new(2, 1)
     {:ok, _, board} = Board.place_mark(board, :o, coord)
 
-    io.puts TextGraphics.draw_board(board)
-    io.puts "Now if player 2 entered 3 we would get the above board\n\n\n"
+    IO.puts TextGraphics.draw_board(board)
+    IO.puts "Now if player 2 entered 3 we would get the above board\n\n\n"
   end
 
   def end_message(end_state) do
@@ -79,7 +79,7 @@ defmodule TicTacToe.CLI.Messages do
 
 
 
-    """
+    """ |> IO.puts
   end
 
   defp win_msg(:player1) do

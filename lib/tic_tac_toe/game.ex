@@ -1,7 +1,7 @@
 defmodule TicTacToe.Game do
   alias TicTacToe.{Board, Game, Rules, Coordinate}
   @enforce_keys [:board, :rules]
-  defstruct [:board, :rules]
+  defstruct [:board, :rules, :winner]
 
   @moduledoc false
   def start() do
@@ -50,7 +50,8 @@ defmodule TicTacToe.Game do
       :ok,
       %Game{
         board: board,
-        rules: Rules.new()
+        rules: Rules.new(),
+        winner: nil
       }
     }
   end
@@ -77,12 +78,21 @@ defmodule TicTacToe.Game do
   end
 
   defp chk_win(%Game{rules: rules} = game_state, :win) do
-    with {:ok, rules} <- Rules.check(rules, {:chk_win, :win}),
-    do: {:ok, %Game{game_state | rules: rules}}
+    with {:ok, new_rules} <- Rules.check(rules, {:chk_win, :win})
+    do
+      winner = get_winner(rules.state)
+      new_state = %Game{game_state | rules: new_rules, winner: winner}
+      {:ok, new_state}
+    end
   end
 
   defp chk_win(%Game{rules: rules} = game_state, :no_win) do
     with {:ok, rules} <- Rules.check(rules, {:chk_win, :no_win}),
+    do: {:ok, %Game{game_state | rules: rules}}
+  end
+
+  defp chk_win(%Game{rules: rules} = game_state, :tie) do
+    with {:ok, rules} <- Rules.check(rules, {:chk_win, :tie}),
     do: {:ok, %Game{game_state | rules: rules}}
   end
 
@@ -109,6 +119,9 @@ defmodule TicTacToe.Game do
       {:ok, new_state}
     end
   end
+
+  defp get_winner(:player1_turn), do: :player1
+  defp get_winner(:player2_turn), do: :player2
 
 
 end

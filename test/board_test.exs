@@ -68,6 +68,14 @@ defmodule BoardTest do
       owin_board = %Board{board | o: MapSet.new([coord(1,1), coord(1,2)])}
       assert {:ok, :win, _} = Board.place_mark(owin_board, :o, coord(1, 3))
     end
+
+    test "should return :tie if mark is a tie", %{board: board} do
+      os = MapSet.new([coord(1, 1), coord(2, 3), coord(3, 1), coord(3, 2)])
+      xs = MapSet.new([coord(1, 2), coord(1, 3), coord(2, 1), coord(2, 2)])
+      avail = MapSet.new([coord(3, 3)])
+      board = %Board{board | o: os, x: xs, avail: avail}
+      assert {:ok, :tie, _} = Board.place_mark(board, :x, coord(3, 3))
+    end
   end
 
   def available_coordinates do

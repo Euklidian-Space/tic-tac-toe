@@ -23,7 +23,7 @@ defmodule TicTacToe.Board do
       true -> {:error, "tile already taken."}
       false ->
         board = %Board{board | x: MapSet.put(board.x, coord), avail: MapSet.delete(board.avail, coord)}
-        {:ok, chk_win(board, :x), board}
+        {:ok, chk_win_tie(board, :x), board}
     end
   end
 
@@ -32,7 +32,7 @@ defmodule TicTacToe.Board do
       true -> {:error, "tile already taken."}
       false ->
         board = %Board{board | o: MapSet.put(board.o, coord), avail: MapSet.delete(board.avail, coord)}
-        {:ok, chk_win(board, :o), board}
+        {:ok, chk_win_tie(board, :o), board}
     end
   end
 
@@ -58,6 +58,20 @@ defmodule TicTacToe.Board do
   defp coord_taken?(board, coord), do:
     not MapSet.member?(board.avail, coord)
 
+  defp chk_win_tie(board, :x) do
+    case chk_win(board, :x) do
+      :no_win -> chk_tie(board)
+      win -> win
+    end
+  end
+
+  defp chk_win_tie(board, :o) do
+    case chk_win(board, :o) do
+      :no_win -> chk_tie(board)
+      win -> win
+    end
+  end
+
   defp chk_win(board, :x) do
     Enum.any?(board.winning_sets, fn winning_set ->
       MapSet.subset?(winning_set, board.x)
@@ -72,7 +86,16 @@ defmodule TicTacToe.Board do
     |> win?
   end
 
+  defp chk_tie(board) do
+    Enum.empty?(board.avail)
+    |> case  do
+      true -> :tie
+      _ -> :no_win
+    end
+  end
+
   defp win?(true), do: :win
   defp win?(false), do: :no_win
+
 
 end

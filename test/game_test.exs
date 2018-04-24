@@ -32,9 +32,9 @@ defmodule GameTest do
       assert rules.state == :player2_turn
     end
 
-    test "if mark is a win, then rules state should be :game_over" do
+    test "if mark is a win, then rules state should be :game_over and winner field should be populated" do
       create_winable_game()
-      assert {:ok, %Game{rules: sm}} = Game.place_mark(3, 3)
+      assert {:ok, %Game{rules: sm, winner: :player1}} = Game.place_mark(3, 3)
       assert sm.state == :game_over
     end
 
@@ -55,22 +55,26 @@ defmodule GameTest do
       assert MapSet.member?(os, coord(3,3))
       assert MapSet.member?(xs, coord(1,1))
     end
+
+    test "if mark is a tie, then rules should be :game_over and winner field should be nil" do
+      create_tie_game()
+      assert {:ok, %Game{rules: sm, winner: nil}} = Game.place_mark(1, 2)
+      assert sm.state == :game_over
+    end
   end
 
-  # defp create_winable_game do
-  #   board = %{
-  #     o_coords: [coord(1,1), coord(1,2)],
-  #     x_coords: [coord(3,1), coord(3,2)]
-  #   } |> create_board
-  #   sm = %Rules{state: :player1_turn}
-  #   {:ok, game} = Agent.start_link(fn -> %Game{board: board, rules: sm} end)
-  #   game
-  # end
   defp create_winable_game do
     Game.place_mark(3,1)
     Game.place_mark(1,1)
     Game.place_mark(3,2)
     Game.place_mark(1,2)
+  end
+
+  defp create_tie_game do
+    [{2, 2}, {3, 2}, {1, 3}, {3, 1}, {3, 3}, {1, 1}, {2, 1}, {2, 3}]
+    |> Enum.each(fn {r, c} ->
+      Game.place_mark(r, c)
+    end)
   end
 
 end

@@ -22,15 +22,6 @@ defmodule RulesTest do
       assert :error = Rules.check(state, :add_player)
     end
 
-    # test "should change game state to :cpu1_turn", %{fresh_state: state} do
-    #   assert {:ok, %Rules{state: :cpu1_turn}} = Rules.check(state , :add_cpu_player)
-    # end
-    #
-    # test ":add_cpu_player action should yield :error if state was not in :initialized" do
-    #   state = %Rules{state: :some_other_state}
-    #   assert :error = Rules.check(state, :add_cpu_player)
-    # end
-
     test "should return error on unrecognized action", %{fresh_state: state} do
       assert :error = Rules.check(state, :invalid_action)
     end
@@ -69,6 +60,14 @@ defmodule RulesTest do
 
       state = %Rules{state: :player2_turn}
       assert {:ok, %Rules{state: :player2_turn}} = Rules.check(state, {:chk_win, :no_win})
+    end
+
+    test "action {:chk_win, tie} should change state to game_over" do
+      state = %Rules{state: :player1_turn}
+      assert = {:ok, %Rules{state: :game_over}} = Rules.check(state, {:chk_win, :tie})
+
+      state = %Rules{state: :player2_turn}
+      assert = {:ok, %Rules{state: :game_over}} = Rules.check(state, {:chk_win, :tie})
     end
   end
 end

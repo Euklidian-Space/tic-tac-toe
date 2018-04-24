@@ -1,21 +1,10 @@
 # TicTacToe
 
-**TODO: Add description**
+##Instructions
 
-## Installation
+In order to run the tic tac toe game just clone and run
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `tic_tac_toe` to your list of dependencies in `mix.exs`:
+mix escript.build
 
-```elixir
-def deps do
-  [
-    {:tic_tac_toe, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/tic_tac_toe](https://hexdocs.pm/tic_tac_toe).
-
+in the root directory. It will build an executable named tic_tac_toe that
+you can run from your terminal.  

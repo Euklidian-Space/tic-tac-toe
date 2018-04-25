@@ -1,16 +1,22 @@
 defmodule TicTacToe.TextGraphics.DrawPoints do
-  alias TicTacToe.{Board, Coordinate}
+  alias TicTacToe.{Board}
+  alias TicTacToe.TextGraphics.Points
 
   def get_points(%Board{x: xs}, :x) do
-    Stream.map(xs, &get_square_center/1)
+    Stream.map(xs, &Points.get_square_center/1)
     |> Stream.map(fn sq_center -> get_draw_origin(sq_center, :x) end)
     |> Enum.flat_map(&get_x_points/1)
   end
 
   def get_points(%Board{o: os}, :o) do
-    Stream.map(os, &get_square_center/1)
+    Stream.map(os, &Points.get_square_center/1)
     |> Stream.map(fn sq_center -> get_draw_origin(sq_center, :o) end)
     |> Enum.flat_map(&get_o_points/1)
+  end
+
+  def get_points(%Board{avail: avail}, :avail) do
+    Stream.map(avail, &Points.get_square_center/1)
+    |> Enum.flat_map(&get_label_points/1)
   end
 
   defp get_draw_origin({r, c}, :o) do
@@ -20,42 +26,6 @@ defmodule TicTacToe.TextGraphics.DrawPoints do
   defp get_draw_origin({r, c}, :x) do
     {r - 2, c - 4}
   end
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 1 and c == 1,
-  do: {4, 8}
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 1 and c == 2,
-  do: {4, 24}
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 1 and c == 3,
-  do: {4, 40}
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 2 and c == 1,
-  do: {12, 8}
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 2 and c == 2,
-  do: {12, 24}
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 2 and c == 3,
-  do: {12, 40}
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 3 and c == 1,
-  do: {20, 8}
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 3 and c == 2,
-  do: {20, 24}
-
-  defp get_square_center(%Coordinate{row: r, col: c})
-  when r == 3 and c == 3,
-  do: {20, 40}
 
   defp get_o_points({_, c} = left_most) do
     o_top_half(left_most, c + 10, [])
@@ -67,6 +37,14 @@ defmodule TicTacToe.TextGraphics.DrawPoints do
     x_main_diagonal({r + 4, c}, c + 8, [])
     ++
     x_off_diagonal(upper_left, c + 8, [])
+  end
+
+  defp get_label_points({r, c}) do
+    [
+      {r - 1, c - 1}, {r - 1, c}, {r - 1, c + 1},
+      {r, c - 1}, {r, c}, {r, c + 1},
+      {r + 1, c - 1}, {r + 1, c}, {r + 1, c + 1}
+    ]
   end
 
   defp o_top_half({r, c}, c_max, result)

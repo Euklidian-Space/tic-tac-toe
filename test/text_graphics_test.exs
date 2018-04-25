@@ -24,32 +24,3 @@ defmodule TicTacToe.TextGraphicsTest do
     end
   end
 end
-
-# """
-#   ii0 0 0 0
-#   i0       0
-#   0iiiiiiiii0
-#    0       0
-#     0 0 0 0
-#
-#     5 by 11
-# """
-# """
-#   ii00 0 0
-#   i0     0
-#   0iiiiiii0
-#    0     0
-#     0 0 0
-#
-#     5 by 11
-# """
-#
-# """
-#       x       x
-#         x   x
-#           x
-#         x   x
-#       x       x
-#
-#       5 by 9
-# """

@@ -71,7 +71,11 @@ defmodule TicTacToe.DrawPointsTest do
       coords = [coord(1,1), coord(3,3)]
       board = %{avail: MapSet.new(coords)} |> create_board()
       expected_points = label_points_for(coord(3,3)) ++ label_points_for(coord(1,1))
+        |> MapSet.new
       received_points = DrawPoints.get_points(board, :avail)
+        |> MapSet.new
+
+      assert expected_points == received_points
     end
   end
 

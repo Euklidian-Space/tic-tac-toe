@@ -22,7 +22,10 @@ defmodule TicTacToe.PointsTest do
   describe "get_square_tuple" do
     test "given a row col tuple return which square that tuple belongs to" do
       [{1,1}, {1,18}, {1, 39}, {10, 9}]
-      |> Enum.map(&Points.get_square_coord/1)
+      |> Enum.map(fn tup ->
+        {:ok, coord} = Points.get_square_coord(tup)
+        coord
+      end)
       |> MapSet.new
       |> MapSet.equal?(MapSet.new([coord(1,1), coord(1, 2), coord(1,3), coord(2,1)]))
       |> assert

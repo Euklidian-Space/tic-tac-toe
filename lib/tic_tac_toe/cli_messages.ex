@@ -19,7 +19,7 @@ defmodule TicTacToe.CLI.Messages do
     {:ok, _, board} = Board.place_mark(board, :o, coord)
 
     IO.puts TextGraphics.draw_board(board)
-    IO.puts "Now if player 2 entered 3 we would get the above board\n\n\n"
+    IO.puts "Now if player 2 entered 4 we would get the above board\n\n\n"
   end
 
   def end_message(end_state) do

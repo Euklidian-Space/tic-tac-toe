@@ -11,16 +11,17 @@ defmodule BoardTest do
           x: %MapSet{},
           o: %MapSet{},
           avail: received_coordinates,
-          winning_sets: _
+          winning_sets: _,
+          size: 3
         }
-      } = Board.new()
+      } = Board.new(3)
       assert received_coordinates == expected_coordinates
     end
   end
 
   describe "place_mark/3" do
     setup  do
-      {:ok, board} = Board.new()
+      {:ok, board} = Board.new 3
       {:ok, %{board: board}}
     end
 

@@ -1,21 +1,22 @@
 defmodule TicTacToe.Board do
   alias TicTacToe.{ Coordinate, Board, WinningSets }
-  @enforce_keys [:x, :o, :avail, :winning_sets]
-  @size 3
-  defstruct [:x, :o, :avail, :winning_sets]
+  @enforce_keys [:x, :o, :avail, :winning_sets, :size]
+  # @size 3
+  defstruct [:x, :o, :avail, :winning_sets, :size]
 
 
-  def new() do
-    available_coordinates = add_coordinates(@size)
+  def new(size \\ 3) when is_integer(size) and size >= 1 do
+    available_coordinates = add_coordinates(size)
     {
       :ok,
       %Board{
         x: MapSet.new,
         o: MapSet.new,
         avail: available_coordinates,
-        winning_sets: WinningSets.build(@size)
-        }
+        winning_sets: WinningSets.build(size),
+        size: size
       }
+    }
   end
 
   def place_mark(board, :x, %Coordinate{} = coord) do

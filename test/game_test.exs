@@ -21,7 +21,7 @@ defmodule GameTest do
       {:ok, %Game{} = game_state} = Game.start_game()
       {:ok, game_state: game_state}
       on_exit(fn ->
-        Game.reset_game()
+        Game.reset_game(board_size: 3)
       end)
     end
 
@@ -31,7 +31,7 @@ defmodule GameTest do
       assert MapSet.member?(board.x, coord(1, 2))
       assert rules.state == :player2_turn
     end
-
+    
     test "if mark is a win, then rules state should be :game_over and winner field should be populated" do
       create_winable_game()
       assert {:ok, %Game{rules: sm, winner: :player1}} = Game.place_mark(3, 3)

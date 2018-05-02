@@ -28,7 +28,7 @@ defmodule TicTacToe.CLI do
     game_loop(state, :no_bot)
     |> Messages.end_message()
     |> Messages.prompt_restart(fn ->
-      Game.reset_game()
+      Game.reset_game(board_size: 3)
       setup()
       |> start_game
     end)
@@ -40,7 +40,7 @@ defmodule TicTacToe.CLI do
     game_loop(state, :with_bot)
     |> Messages.end_message()
     |> Messages.prompt_restart(fn ->
-      Game.reset_game()
+      Game.reset_game(board_size: 3)
       setup()
       |> start_game
     end)

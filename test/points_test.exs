@@ -12,9 +12,11 @@ defmodule TicTacToe.PointsTest do
       ]
       [{1,1}, {1,2}, {1,3}, {2,1}, {2,2}, {2,3}, {3,1}, {3,2}, {3,3}]
       |> Stream.map(fn {r, c} -> coord(r, c) end)
-      |> Stream.map(&Points.get_square_center/1)
-      |> Enum.all?(fn tuple ->
-        tuple in expected
+      |> Stream.map(fn coord ->
+        Points.get_square_center(coord, {8, 16})
+      end)
+      |> Enum.each(fn tuple ->
+        assert (tuple in expected)
       end)
     end
   end
@@ -23,7 +25,7 @@ defmodule TicTacToe.PointsTest do
     test "given a row col tuple return which square that tuple belongs to" do
       [{1,1}, {1,18}, {1, 39}, {10, 9}]
       |> Enum.map(fn tup ->
-        {:ok, coord} = Points.get_square_coord(tup)
+        {:ok, coord} = Points.get_square_coord(tup, {8, 16})
         coord
       end)
       |> MapSet.new

@@ -1,6 +1,38 @@
 defmodule TicTacToe.TextGraphics.Points do
   alias TicTacToe.Coordinate
 
+  def get_square_center(%Coordinate{row: r, col: c}, square_dimensions) do
+    {rows, cols} = square_dimensions
+    curr_row = div(rows, 2)
+    curr_col = div(cols, 2)
+    {
+      do_get_square_center(curr_row, rows, r),
+      do_get_square_center(curr_col, cols, c)
+    }
+  end
+
+  def get_square_coord(location, square_dimensions) do
+    {r, c} = location
+    {r_offset, c_offset} = square_dimensions
+    coord_row = do_get_square_coord(r, r_offset, 1)
+    coord_col = do_get_square_coord(c, c_offset, 1)
+    Coordinate.new(coord_row, coord_col)
+  end
+
+  defp do_get_square_center(curr_center, _, target)
+  when target <= 1,
+  do: curr_center
+
+  defp do_get_square_center(curr_center, offset, target), do:
+    do_get_square_center(curr_center + offset, offset, target - 1)
+
+  defp do_get_square_coord(curr_loc, offset, result)
+  when curr_loc <= offset,
+  do: result
+
+  defp do_get_square_coord(curr_loc, offset, result), do:
+    do_get_square_coord(curr_loc - offset, offset, result + 1)
+
   def get_square_center(%Coordinate{row: r, col: c})
   when r == 1 and c == 1,
   do: {4, 8}

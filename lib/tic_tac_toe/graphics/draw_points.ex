@@ -2,19 +2,58 @@ defmodule TicTacToe.TextGraphics.DrawPoints do
   alias TicTacToe.{Board}
   alias TicTacToe.TextGraphics.Points
 
-  def get_points(%Board{x: xs}, :x) do
+  def get_points(%Board{} = board) do
+    %{
+      x_points: do_get_points(board, :x),
+      o_points: do_get_points(board, :o),
+      label_points: do_get_points(board, :avail)
+    }
+  end
+
+  def get_points(%Board{} = board, {_r, _c} = square_dimensions) do
+    %{
+      x_points: do_get_points(board, square_dimensions, :x),
+      o_points: do_get_points(board, square_dimensions, :o),
+      label_points: do_get_points(board, square_dimensions, :avail)
+    }
+  end
+
+  defp do_get_points(%Board{x: xs}, square_dimensions, :x) do
+    Stream.map(xs, fn coord ->
+      Points.get_square_center(coord, square_dimensions)
+    end)
+    |> Stream.map(fn sq_center -> get_draw_origin(sq_center, :x) end)
+    |> Enum.flat_map(&get_x_points/1)
+  end
+
+  defp do_get_points(%Board{o: os}, square_dimensions, :o) do
+    Stream.map(os, fn coord ->
+      Points.get_square_center(coord, square_dimensions)
+    end)
+    |> Stream.map(fn sq_center -> get_draw_origin(sq_center, :o) end)
+    |> Enum.flat_map(&get_o_points/1)
+  end
+
+  defp do_get_points(%Board{avail: avail}, square_dimensions, :avail) do
+    Stream.map(avail, fn coord ->
+      Points.get_square_center(coord, square_dimensions)
+    end)
+    |> Enum.flat_map(&get_label_points/1)
+  end
+
+  defp do_get_points(%Board{x: xs}, :x) do
     Stream.map(xs, &Points.get_square_center/1)
     |> Stream.map(fn sq_center -> get_draw_origin(sq_center, :x) end)
     |> Enum.flat_map(&get_x_points/1)
   end
 
-  def get_points(%Board{o: os}, :o) do
+  defp do_get_points(%Board{o: os}, :o) do
     Stream.map(os, &Points.get_square_center/1)
     |> Stream.map(fn sq_center -> get_draw_origin(sq_center, :o) end)
     |> Enum.flat_map(&get_o_points/1)
   end
 
-  def get_points(%Board{avail: avail}, :avail) do
+  defp do_get_points(%Board{avail: avail}, :avail) do
     Stream.map(avail, &Points.get_square_center/1)
     |> Enum.flat_map(&get_label_points/1)
   end

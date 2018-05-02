@@ -6,8 +6,8 @@ defmodule TicTacToe.CpuPlayer do
   @x_score 10
   @o_score -10
 
-  def get_move(%Board{} = board, x_or_o) do
-    case x_or_o do
+  def get_move(%Board{} = board, mark) do
+    case mark do
       :x ->
         choose_profitable_move(board, :x)
       :o ->

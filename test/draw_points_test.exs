@@ -4,6 +4,8 @@ defmodule TicTacToe.DrawPointsTest do
   alias TicTacToe.TextGraphics.DrawPoints
   alias TicTacToe.Coordinate
 
+  @square_dimensions {8, 16}
+
   describe "get_points/2" do
     test "should return a list of tuples representing the draw points for x in box (1, 1)" do
       board = %{
@@ -16,9 +18,12 @@ defmodule TicTacToe.DrawPointsTest do
         {2, 12}, {3, 10}, {5, 6}, {6, 4}
       ] |> MapSet.new
 
-      received_points = DrawPoints.get_points(board, :x) |> MapSet.new
+      %{x_points: received_points} = DrawPoints.get_points(board, @square_dimensions)
 
-      assert MapSet.equal?(expected_points, received_points)
+      assert(
+        MapSet.new(received_points)
+        |> MapSet.equal?(expected_points)
+      )
     end
 
     test "should return a list of tuples representing the draw points for x in box (3,2)" do
@@ -32,9 +37,12 @@ defmodule TicTacToe.DrawPointsTest do
         {22, 20}, {21, 22}, {19, 26}, {18, 28}
       ] |> MapSet.new
 
-      received_points = DrawPoints.get_points(board, :x) |> MapSet.new
+      %{x_points: received_points} = DrawPoints.get_points(board, @square_dimensions)
 
-      assert MapSet.equal?(expected_points, received_points)
+      assert(
+        MapSet.new(received_points)
+        |> MapSet.equal?(expected_points)
+      )
     end
 
     test "should return a list of tuples representing the draw points for o in box (3,2)" do
@@ -48,9 +56,12 @@ defmodule TicTacToe.DrawPointsTest do
         {20, 45}, {21, 36}, {22, 37}, {22, 39}, {22, 41}, {22, 43}, {21, 44}
       ] |> MapSet.new
 
-      received_points = DrawPoints.get_points(board, :o) |> MapSet.new
+      %{o_points: received_points} = DrawPoints.get_points(board, @square_dimensions)
 
-      assert MapSet.equal?(expected_points, received_points)
+      assert(
+        MapSet.new(received_points)
+        |> MapSet.equal?(expected_points)
+      )
     end
 
     test "should return list of tuples representing the draw points for square Labels" do
@@ -61,7 +72,7 @@ defmodule TicTacToe.DrawPointsTest do
       end)
       |> Enum.each(fn b ->
         expected_points = b.avail |> Enum.to_list |> List.first |> label_points_for
-        received_points = DrawPoints.get_points(b, :avail)
+        %{label_points: received_points} = DrawPoints.get_points(b, @square_dimensions)
 
         assert expected_points == received_points
       end)
@@ -72,10 +83,9 @@ defmodule TicTacToe.DrawPointsTest do
       board = %{avail: MapSet.new(coords)} |> create_board()
       expected_points = label_points_for(coord(3,3)) ++ label_points_for(coord(1,1))
         |> MapSet.new
-      received_points = DrawPoints.get_points(board, :avail)
-        |> MapSet.new
+      %{label_points: received_points} = DrawPoints.get_points(board, @square_dimensions)
 
-      assert expected_points == received_points
+      assert expected_points == MapSet.new(received_points)
     end
   end
 

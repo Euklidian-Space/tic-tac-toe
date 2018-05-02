@@ -5,7 +5,7 @@ defmodule TicTacToe.TextGraphicsTest do
 
   describe "tic tac toe board" do
     test "should return a tic tac toe board as a string with no points drawn" do
-      {:ok, board} = Board.new
+      {:ok, board} = Board.new 3
       board_string = TextGraphics.draw_board(board)
       assert board_string ==
       "               |               |               \n               |               |               \n      +-+      |      +-+      |      +-+      \n      |1|      |      |2|      |      |3|      \n      +-+      |      +-+      |      +-+      \n               |               |               \n               |               |               \n_______________|_______________|_______________\n               |               |               \n               |               |               \n      +-+      |      +-+      |      +-+      \n      |4|      |      |5|      |      |6|      \n      +-+      |      +-+      |      +-+      \n               |               |               \n               |               |               \n_______________|_______________|_______________\n               |               |               \n               |               |               \n      +-+      |      +-+      |      +-+      \n      |7|      |      |8|      |      |9|      \n      +-+      |      +-+      |      +-+      \n               |               |               \n               |               |               \n               |               |               \n"

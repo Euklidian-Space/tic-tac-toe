@@ -64,10 +64,10 @@ defmodule RulesTest do
 
     test "action {:chk_win, tie} should change state to game_over" do
       state = %Rules{state: :player1_turn}
-      assert = {:ok, %Rules{state: :game_over}} = Rules.check(state, {:chk_win, :tie})
+      assert {:ok, %Rules{state: :game_over}} = Rules.check(state, {:chk_win, :tie})
 
       state = %Rules{state: :player2_turn}
-      assert = {:ok, %Rules{state: :game_over}} = Rules.check(state, {:chk_win, :tie})
+      assert {:ok, %Rules{state: :game_over}} = Rules.check(state, {:chk_win, :tie})
     end
   end
 end

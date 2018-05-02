@@ -2,7 +2,7 @@ defmodule TicTacToe.TestHelpers do
   alias TicTacToe.{Board, Coordinate}
 
   def create_board(%{o_coords: os, x_coords: xs}) do
-    {:ok, board} = Board.new
+    {:ok, board} = Board.new 3
     board = Enum.reduce(os, board, fn coord, b ->
       {:ok, _, n_board} = Board.place_mark(b, :o, coord)
       n_board
@@ -14,7 +14,7 @@ defmodule TicTacToe.TestHelpers do
   end
 
   def create_board(%{avail: avail}) do
-    {:ok, board} = Board.new
+    {:ok, board} = Board.new 3
     Enum.reduce(board.avail, {:x, board}, fn
       a, {:x, b } ->
         case MapSet.member?(avail, a) do
@@ -37,6 +37,11 @@ defmodule TicTacToe.TestHelpers do
         end
     end)
     |> elem(1)
+  end
+
+  def create_board(:fresh, size) do
+    {:ok, board} = Board.new(size)
+    board
   end
 
   def coord(r, c) do

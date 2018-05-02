@@ -4,9 +4,10 @@ defmodule TicTacToe.Game do
   defstruct [:board, :rules, :winner]
 
   @moduledoc false
-  def start() do
+  def start(opts \\ []) do
+    {:ok, board_size} = Keyword.fetch(opts, :board_size)
     Agent.start(fn ->
-      {:ok, %Game{} = game} = new()
+      {:ok, %Game{} = game} = new(board_size)
       game
     end, name: __MODULE__)
   end
@@ -18,9 +19,10 @@ defmodule TicTacToe.Game do
     {:ok, new_state}
   end
 
-  def reset_game do
+  def reset_game(opts \\ []) do
+    {:ok, board_size} = Keyword.fetch(opts, :board_size)
     Agent.update(Game, fn _ ->
-      {:ok, %Game{} = game} = new()
+      {:ok, %Game{} = game} = new(board_size)
       game
     end)
   end
@@ -45,8 +47,8 @@ defmodule TicTacToe.Game do
 
   end
 
-  defp new() do
-    {:ok, board} = Board.new()
+  defp new(board_size) do
+    {:ok, board} = Board.new(board_size)
     {
       :ok,
       %Game{

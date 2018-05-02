@@ -2,7 +2,7 @@ defmodule TicTacToe.CLI.Messages do
   alias TicTacToe.{Board, Coordinate, TextGraphics}
 
   def demo() do
-    {:ok, board} = Board.new
+    {:ok, board} = Board.new 3
     {:ok, coord} = Coordinate.new(1, 1)
     {:ok, _, board} = Board.place_mark(board, :x, coord)
     """

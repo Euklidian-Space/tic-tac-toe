@@ -48,4 +48,14 @@ defmodule TicTacToe.TestHelpers do
     {:ok, coord} = Coordinate.new r, c
     coord
   end
+
+  def create_blank_board_string({rows, cols}) do
+    Enum.reduce(1..rows, "", fn _, result ->
+      result <> build_blank_board_row(cols)
+    end)
+  end
+
+  defp build_blank_board_row(1), do: " \n"
+  defp build_blank_board_row(cols), do:
+    " " <> build_blank_board_row(cols - 1)
 end

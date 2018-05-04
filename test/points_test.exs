@@ -1,5 +1,5 @@
 defmodule TicTacToe.PointsTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import TicTacToe.TestHelpers
   alias TicTacToe.TextGraphics.{Points}
 

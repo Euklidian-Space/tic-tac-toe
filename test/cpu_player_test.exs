@@ -1,5 +1,5 @@
 defmodule CpuPlayerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias TicTacToe.{CpuPlayer, Coordinate}
   import TicTacToe.TestHelpers
 

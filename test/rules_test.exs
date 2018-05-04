@@ -1,5 +1,5 @@
 defmodule RulesTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias TicTacToe.Rules
 
   describe "new/0" do

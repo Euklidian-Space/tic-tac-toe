@@ -1,5 +1,5 @@
 defmodule BoardTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias TicTacToe.{ Board, Coordinate }
 
   describe "new/1" do

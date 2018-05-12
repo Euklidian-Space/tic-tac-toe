@@ -5,7 +5,7 @@ defmodule WinningSetsTest do
   describe "build/0" do
     test "should return list of MapSets" do
       received = MapSet.new WinningSets.build(3)
-      expected = MapSet.new winning_sets
+      expected = MapSet.new winning_sets()
       assert received == expected
     end
   end

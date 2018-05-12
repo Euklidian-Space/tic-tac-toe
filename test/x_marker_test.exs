@@ -15,7 +15,7 @@ defmodule XMarkerTest do
     %{blank_board: board}
     do
       centers = [{4, 8}, {12, 40}]
-      assert {:ok, n_board_string} = XMarker.place_marks(centers, board)
+      assert {:ok, n_board_string} = XMarker.place_marks(board, centers)
 
       row4 = String.split(n_board_string, "\n")
       |> Stream.filter(&(&1 != ""))
@@ -34,17 +34,6 @@ defmodule XMarkerTest do
       assert String.at(row11, col42) == "x"
     end
 
-    test "should give error if mark drawing is off the board",
-    %{blank_board: board}
-    do
-      centers = [{1, 1}]
-
-      expected_err_msg =
-        "XMarker off board. Perhaps one of the given centers: #{inspect centers} is invalid?"
-
-      assert {:error, ^expected_err_msg}
-        = XMarker.place_marks(centers, board)
-    end
   end
 
 

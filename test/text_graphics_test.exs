@@ -24,3 +24,14 @@ defmodule TicTacToe.TextGraphicsTest do
     # end
   end
 end
+
+
+#     _.----._
+#   .'   /    '.
+#  /    |       \
+# |     \        |
+# |      '.      |
+# |        `\    |
+#  \        |   /
+#   '._    / _.'
+#      '----'

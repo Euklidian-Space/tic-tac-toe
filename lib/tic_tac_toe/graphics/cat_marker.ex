@@ -3,7 +3,7 @@ defmodule TicTacToe.TextGraphics.CatMarker do
   @behaviour MarkerBehaviour
 
   @spec place_marks(String.t(), [{non_neg_integer(), non_neg_integer()}])
-    :: {:ok, String.t()} | {:error, String.t()}
+    :: {:ok, String.t()}
 
   def place_marks(board_string, centers) do
     {:ok, Enum.reduce(centers, board_string, &mark_cells/2)}

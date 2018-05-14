@@ -4,13 +4,17 @@ defmodule TicTacToe.TextGraphics do
   @square_cols 32
   @square_rows 16
 
-  def draw_board(%Board{} = board, %{xmarker: _, omarker: _} = markers) do
+  def draw_board(%Board{} = board, %{xmarker: _, omarker: _} = markers, label) do
     rows = board.size * @square_rows - 1
-    cols = board.size * @square_cols - 1
+    cols = board.size * @square_cols
     do_draw_board({rows, cols}, cols, fn {r, c} ->
       draw_cell({r, c}, {rows, cols})
     end)
     |> draw_marks(markers, board)
+    |> case do
+      {:ok, board_string} -> draw_labels(board_string, board, label)
+      {:error, _} = err ->
+    end
   end
 
   defp do_draw_board({0, 0}, _c_max, _draw), do: ""
@@ -43,6 +47,11 @@ defmodule TicTacToe.TextGraphics do
     end
   end
 
+  defp draw_labels(board_string, %Board{} = board, label) do
+    avail_centers = get_avail_centers(board)
+    label.place_labels(board_string, board.size, avail_centers)
+  end
+
   defp centers(%Board{o: os, x: xs}) do
     o_centers = Enum.map(os, fn coord ->
       Points.get_square_center(coord, {@square_rows, @square_cols})
@@ -53,6 +62,15 @@ defmodule TicTacToe.TextGraphics do
     end)
 
     %{x_centers: x_centers, o_centers: o_centers}
+  end
+
+  defp get_avail_centers(%Board{avail: avail}) do
+    Enum.map(avail, fn coord ->
+      {
+        coord,
+        Points.get_square_center(coord, {@square_rows, @square_cols})
+      }
+    end)
   end
 
 end

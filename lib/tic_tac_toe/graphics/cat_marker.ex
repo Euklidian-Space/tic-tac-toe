@@ -30,84 +30,84 @@ defmodule TicTacToe.TextGraphics.CatMarker do
 
   defp build_row_1(board_string, {r, c}) do
     build_row(board_string, r - 4, fn row_char_list ->
-      List.update_at(row_char_list, c - 2, fn _ -> ?( end)
-      |> List.update_at(c - 1, fn _ -> ?\\ end)
-      |> List.update_at(c , fn _ -> ?_ end)
-      |> List.update_at(c + 1, fn _ -> ?/ end)
-      |> List.update_at(c + 2, fn _ -> ?) end)
+      List.update_at(row_char_list, c - 3, fn _ -> ?( end)
+      |> List.update_at(c - 2, fn _ -> ?\\ end)
+      |> List.update_at(c - 1, fn _ -> ?_ end)
+      |> List.update_at(c, fn _ -> ?/ end)
+      |> List.update_at(c + 1, fn _ -> ?) end)
     end)
   end
 
   defp build_row_2(board_string, {r, c}) do
     build_row(board_string, r - 3, fn row_char_list ->
-      List.update_at(row_char_list, c - 2, fn _ -> ?/ end)
-      |> List.update_at(c - 1, fn _ -> ?. end)
-      |> List.update_at(c + 1, fn _ -> ?. end)
-      |> List.update_at(c + 2, fn _ -> ?\\ end)
+      List.update_at(row_char_list, c - 3, fn _ -> ?/ end)
+      |> List.update_at(c - 2, fn _ -> ?. end)
+      |> List.update_at(c, fn _ -> ?. end)
+      |> List.update_at(c + 1, fn _ -> ?\\ end)
     end)
   end
 
   defp build_row_3(board_string, {r, c}) do
     build_row(board_string, r - 2, fn row_char_list ->
-      List.update_at(row_char_list, c - 3, fn _ -> ?= end)
-      |> List.update_at(c - 2, fn _ -> ?\\ end)
-      |> List.update_at(c - 1, fn _ -> ?_ end)
-      |> List.update_at(c, fn _ -> ?T end)
-      |> List.update_at(c + 1, fn _ -> ?_ end)
-      |> List.update_at(c + 2, fn _ -> ?/ end)
-      |> List.update_at(c + 3, fn _ -> ?= end)
+      List.update_at(row_char_list, c - 4, fn _ -> ?= end)
+      |> List.update_at(c - 3, fn _ -> ?\\ end)
+      |> List.update_at(c - 2, fn _ -> ?_ end)
+      |> List.update_at(c - 1, fn _ -> ?T end)
+      |> List.update_at(c, fn _ -> ?_ end)
+      |> List.update_at(c + 1, fn _ -> ?/ end)
+      |> List.update_at(c + 2, fn _ -> ?= end)
     end)
   end
 
   defp build_row_4(board_string, {r, c}) do
     build_row(board_string, r - 1, fn row_char_list ->
-      List.update_at(row_char_list, c - 2, fn _ -> ?/ end)
-      |> List.update_at(c + 2, fn _ -> ?\\ end)
-      |> List.update_at(c + 4, fn _ -> ?. end)
-      |> List.update_at(c + 5, fn _ -> ?- end)
-      |> List.update_at(c + 6, fn _ -> ?. end)
+      List.update_at(row_char_list, c - 3, fn _ -> ?/ end)
+      |> List.update_at(c + 1, fn _ -> ?\\ end)
+      |> List.update_at(c + 3, fn _ -> ?. end)
+      |> List.update_at(c + 4, fn _ -> ?- end)
+      |> List.update_at(c + 5, fn _ -> ?. end)
     end)
   end
 
   defp build_row_5(board_string, {r, c}) do
     build_row(board_string, r, fn row_char_list ->
-      List.update_at(row_char_list, c - 2, fn _ -> ?| end)
-      |> List.update_at(c, fn _ -> ?_ end)
-      |> List.update_at(c + 2, fn _ -> ?| end)
-      |> List.update_at(c + 3, fn _ -> ?/ end)
+      List.update_at(row_char_list, c - 3, fn _ -> ?| end)
+      |> List.update_at(c - 1, fn _ -> ?_ end)
+      |> List.update_at(c + 1, fn _ -> ?| end)
+      |> List.update_at(c + 2, fn _ -> ?/ end)
     end)
   end
 
   defp build_row_6(board_string, {r, c}) do
     build_row(board_string, r + 1, fn row_char_list ->
-      List.update_at(row_char_list, c - 3, fn _ -> ?/ end)
-      |> List.update_at(c - 2, fn _ -> ?| end)
-      |> List.update_at(c, fn _ -> ?| end)
-      |> List.update_at(c + 2, fn _ -> ?| end)
-      |> List.update_at(c + 3, fn _ -> ?\\ end)
+      List.update_at(row_char_list, c - 4, fn _ -> ?/ end)
+      |> List.update_at(c - 3, fn _ -> ?| end)
+      |> List.update_at(c - 1, fn _ -> ?| end)
+      |> List.update_at(c + 1, fn _ -> ?| end)
+      |> List.update_at(c + 2, fn _ -> ?\\ end)
     end)
   end
 
   defp build_row_7(board_string, {r, c}) do
     build_row(board_string, r + 2, fn row_char_list ->
-      List.update_at(row_char_list, c - 3, fn _ -> ?\\ end)
-      |> List.update_at(c - 2, fn _ -> ?) end)
-      |> List.update_at(c - 1, fn _ -> ?_ end)
-      |> List.update_at(c, fn _ -> ?| end)
-      |> List.update_at(c + 1, fn _ -> ?_ end)
-      |> List.update_at(c + 2, fn _ -> ?( end)
-      |> List.update_at(c + 3, fn _ -> ?/ end)
+      List.update_at(row_char_list, c - 4, fn _ -> ?\\ end)
+      |> List.update_at(c - 3, fn _ -> ?) end)
+      |> List.update_at(c - 2, fn _ -> ?_ end)
+      |> List.update_at(c - 1, fn _ -> ?| end)
+      |> List.update_at(c, fn _ -> ?_ end)
+      |> List.update_at(c + 1, fn _ -> ?( end)
+      |> List.update_at(c + 2, fn _ -> ?/ end)
     end)
   end
 
   defp build_row_8(board_string, {r, c}) do
     build_row(board_string, r + 3, fn row_char_list ->
-      List.update_at(row_char_list, c - 3, fn _ -> ?\` end)
+      List.update_at(row_char_list, c - 4, fn _ -> ?\` end)
+      |> List.update_at(c - 3, fn _ -> ?\" end)
       |> List.update_at(c - 2, fn _ -> ?\" end)
-      |> List.update_at(c - 1, fn _ -> ?\" end)
+      |> List.update_at(c, fn _ -> ?\" end)
       |> List.update_at(c + 1, fn _ -> ?\" end)
-      |> List.update_at(c + 2, fn _ -> ?\" end)
-      |> List.update_at(c + 3, fn _ -> ?\` end)
+      |> List.update_at(c + 2, fn _ -> ?\` end)
     end)
   end
 

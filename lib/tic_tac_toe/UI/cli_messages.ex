@@ -1,54 +1,63 @@
 defmodule TicTacToe.CLI.Messages do
   alias TicTacToe.{Board, Coordinate, TextGraphics}
+  @io Application.get_env(:tic_tac_toe, :io, IO)
 
   def demo() do
     {:ok, board} = Board.new 3
     {:ok, coord} = Coordinate.new(1, 1)
     {:ok, _, board} = Board.place_mark(board, :x, coord)
+    markers = %{
+      xmarker: TicTacToe.TextGraphics.XMarker,
+      omarker: TicTacToe.TextGraphics.OMarker
+    }
+    label = TicTacToe.TextGraphics.DefaultLabel
     """
     Spaces on the board are numbered 1 through 9 left to right and
     top to bottom. For example enter the number 1.
     """
-    |> IO.gets
-    IO.puts TextGraphics.draw_board(board)
+    |> @io.gets
+    @io.puts TextGraphics.draw_board(board, markers, label)
 
-    IO.puts "The above board is the result."
-    IO.gets("Press enter to continue with the demo\n\n")
+    @io.puts "The above board is the result."
+    @io.gets("Press enter to continue with the demo\n\n")
 
     {:ok, coord} = Coordinate.new(2, 1)
     {:ok, _, board} = Board.place_mark(board, :o, coord)
 
-    IO.puts TextGraphics.draw_board(board)
-    IO.puts "Now if player 2 entered 4 we would get the above board\n\n\n"
+    @io.puts TextGraphics.draw_board(board, markers, label)
+    @io.puts "Now if player 2 entered 4 we would get the above board\n\n\n"
   end
 
   def end_message(end_state) do
     case end_state do
       {:winner, :player1} ->
-        IO.puts win_msg(:player1)
+        @io.puts win_msg(:player1)
         :ok
       {:winner, :player2} ->
-        IO.puts win_msg(:player2)
+        @io.puts win_msg(:player2)
         :ok
       :tie ->
-        IO.puts tie_msg()
+        @io.puts tie_msg()
         :ok
       :exit ->
-        IO.puts "Goodbye!\n\n\n"
+        @io.puts "Goodbye!\n\n\n"
         :no_restart
+      _otherwise ->
+        @io.puts "An error has occurred..."
+        {:error, :unrecognized_state}
     end
   end
 
   def prompt_restart(:no_restart, _), do: :ok
   def prompt_restart(:ok, restart_fun) do
-    IO.gets("Play again? (y/n)")
+    @io.gets("Play again? (y/n)")
     |> String.trim
     |> String.downcase
-    |> case  do
+    |> case do
       "y" ->
         restart_fun.()
       "n" ->
-        IO.puts "Goodbye!\n"
+        @io.puts "Goodbye!\n"
       _ ->
         prompt_restart(:ok, restart_fun)
     end
@@ -79,7 +88,7 @@ defmodule TicTacToe.CLI.Messages do
 
 
 
-    """ |> IO.puts
+    """ |> @io.puts
   end
 
   defp win_msg(:player1) do

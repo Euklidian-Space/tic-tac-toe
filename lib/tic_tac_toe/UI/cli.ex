@@ -1,10 +1,26 @@
 defmodule TicTacToe.CLI do
-  alias TicTacToe.{Game, CpuPlayer, TextGraphics, Coordinate}
+  alias TicTacToe.{Game, CpuPlayer, DefaultPlayer, TextGraphics, Coordinate}
   alias TicTacToe.CLI.Messages
+  @label TextGraphics.DefaultLabel
+  @markers Application.get_env(
+    :tic_tac_toe,
+    :markers,
+    [x: TextGraphics.XMarker, o: TextGraphics.OMarker]
+  )
+  @players Application.get_env(
+    :tic_tac_toe,
+    :players,
+    [default: DefaultPlayer]
+  )
 
   def main(_args) do
     Messages.welcome_msg()
-    Messages.demo()
+    IO.gets("Would you like a demo? (y/n)")
+    |> case do
+      "y" ->
+        Messages.demo()
+      _ -> :ok
+    end
     setup()
     |> start_game
   end
@@ -103,6 +119,7 @@ defmodule TicTacToe.CLI do
     end
   end
 
+
   defp mark_board(%Coordinate{row: r, col: c}),
   do: Game.place_mark(r, c)
 
@@ -127,8 +144,12 @@ defmodule TicTacToe.CLI do
 
   defp mark_board(_), do: {:error, "invalid key"}
 
-  defp print_board(%Game{board: board}) do
-    IO.puts TextGraphics.draw_board(board)
+  defp print_board(%Game{board: board}, markers, label) do
+    markers = Enum.reduce(markers, fn {key, marker} ->
+      m = Keyword.fetch!(@markers, marker)
+      {key, m}
+    end)
+    IO.puts TextGraphics.draw_board(board, markers, label)
   end
 
   defp respond_to_player_move(%Game{} = game_state) do

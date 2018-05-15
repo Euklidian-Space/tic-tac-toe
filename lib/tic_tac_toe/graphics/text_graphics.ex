@@ -4,7 +4,8 @@ defmodule TicTacToe.TextGraphics do
   @square_cols 32
   @square_rows 16
 
-  def draw_board(%Board{} = board, %{xmarker: _, omarker: _} = markers, label) do
+  def draw_board(%Board{} = board, %{xmarker: _, omarker: _} = markers, label)
+  do
     rows = board.size * @square_rows - 1
     cols = board.size * @square_cols
     do_draw_board({rows, cols}, cols, fn {r, c} ->
@@ -13,7 +14,7 @@ defmodule TicTacToe.TextGraphics do
     |> draw_marks(markers, board)
     |> case do
       {:ok, board_string} -> draw_labels(board_string, board, label)
-      {:error, _} = err ->
+      {:error, _} = err -> err
     end
   end
 

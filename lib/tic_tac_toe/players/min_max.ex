@@ -1,10 +1,11 @@
-defmodule TicTacToe.CpuPlayer do
+defmodule TicTacToe.MinMax do
   alias TicTacToe.{Board}
   @initial_best_x {:default, -20}
   @initial_best_o {:default, 20}
   @tie_score 0
   @x_score 10
   @o_score -10
+
 
   def get_move(%Board{} = board, mark) do
     case mark do

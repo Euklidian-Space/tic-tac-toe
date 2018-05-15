@@ -2,6 +2,9 @@ defmodule TicTacToe.Game do
   alias TicTacToe.{Board, Game, Rules, Coordinate}
   @enforce_keys [:board, :rules]
   defstruct [:board, :rules, :winner]
+  @behaviour TicTacToe.GameBehaviour
+
+  @type t :: __MODULE__
 
   @moduledoc false
   def start(opts \\ []) do
@@ -44,7 +47,6 @@ defmodule TicTacToe.Game do
         _otherwise -> next_player(game_state, __MODULE__)
       end
     end
-
   end
 
   defp new(board_size) do

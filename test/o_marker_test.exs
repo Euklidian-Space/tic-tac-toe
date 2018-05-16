@@ -31,6 +31,12 @@ defmodule TicTacToe.OMarkerTest do
       assert String.at(row4, col3) == "o"
       assert String.at(row4, col13) == "o"
     end
+  end
 
+  describe "preview/0" do
+    test "should return a preview" do
+      preview = OMarker.preview()
+      assert preview
+    end
   end
 end

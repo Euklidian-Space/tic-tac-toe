@@ -9,6 +9,10 @@ defmodule TicTacToe.TextGraphics.YinYangMarker do
     {:ok, Enum.reduce(centers, board_string, &mark_cells/2)}
   end
 
+  def preview do
+    Enum.reduce([{8, 16}], preview_board(), &mark_cells/2)
+  end
+
   defp mark_cells({_, _} = center, board_string) do
     top_half(board_string, center)
     |> middle(center)
@@ -133,5 +137,18 @@ defmodule TicTacToe.TextGraphics.YinYangMarker do
       fun.(row) |> List.to_string
     end)
     |> Enum.join("\n")
+  end
+
+  defp preview_board do
+    Enum.reduce(1..16, [], fn _, result ->
+      [generate_preview_row(32) | result]
+    end)
+    |> Enum.join
+  end
+
+  defp generate_preview_row(count) do
+    Enum.reduce(1..count - 1, "", fn _, row ->
+      row <> " "
+    end) <> "\n"
   end
 end

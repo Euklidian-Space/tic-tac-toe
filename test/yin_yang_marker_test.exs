@@ -33,6 +33,13 @@ defmodule TicTacToe.YinYangMarkerTest do
       Enum.at(rows, 12) |> String.contains?("'----'") |> assert
     end
   end
+
+  describe "preview/0" do
+    test "should return a preview" do
+      preview = YinYangMarker.preview()
+      assert preview
+    end
+  end
 end
 
 #4 through 12

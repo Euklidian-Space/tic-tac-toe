@@ -36,5 +36,11 @@ defmodule XMarkerTest do
 
   end
 
+  describe "preview/0" do
+    test "should return a preview" do
+      preview = XMarker.preview()
+      assert preview
+    end
+  end
 
 end

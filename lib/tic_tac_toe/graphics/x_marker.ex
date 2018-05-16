@@ -12,6 +12,14 @@ defmodule TicTacToe.TextGraphics.XMarker do
     |> (fn new_board -> {:ok, new_board} end).()
   end
 
+  def preview do
+    {8, 16}
+    |> get_draw_origin
+    |> get_x_points
+    |> List.flatten
+    |> Enum.reduce(preview_board(), &mark_cell/2)
+  end
+
   defp get_draw_origin({r, c}) do
     {r - 2, c - 4}
   end
@@ -45,6 +53,19 @@ defmodule TicTacToe.TextGraphics.XMarker do
     new_board = Enum.slice(rows, 0..r - 2) ++ [new_row] ++ Enum.slice(rows, r..-1)
 
     Enum.join(new_board, "\n")
+  end
+
+  defp preview_board do
+    Enum.reduce(1..16, [], fn _, result ->
+      [generate_preview_row(32) | result]
+    end)
+    |> Enum.join
+  end
+
+  defp generate_preview_row(count) do
+    Enum.reduce(1..count - 1, "", fn _, row ->
+      row <> " "
+    end) <> "\n"
   end
 
 end

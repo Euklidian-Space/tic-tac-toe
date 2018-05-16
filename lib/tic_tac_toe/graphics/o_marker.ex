@@ -12,6 +12,14 @@ defmodule TicTacToe.TextGraphics.OMarker do
     |> (fn new_board -> {:ok, new_board} end).()
   end
 
+  def preview do
+    {8, 16}
+    |> get_draw_origin
+    |> get_o_points
+    |> List.flatten
+    |> Enum.reduce(preview_board(), &mark_cell/2)
+  end
+
   defp get_draw_origin({r, c}) do
     {r, c - 5}
   end
@@ -64,5 +72,18 @@ defmodule TicTacToe.TextGraphics.OMarker do
     new_board = Enum.slice(rows, 0..r - 2) ++ [new_row] ++ Enum.slice(rows, r..-1)
 
     Enum.join(new_board, "\n")
+  end
+
+  defp preview_board do
+    Enum.reduce(1..16, [], fn _, result ->
+      [generate_preview_row(32) | result]
+    end)
+    |> Enum.join
+  end
+
+  defp generate_preview_row(count) do
+    Enum.reduce(1..count - 1, "", fn _, row ->
+      row <> " "
+    end) <> "\n"
   end
 end

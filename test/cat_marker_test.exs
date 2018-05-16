@@ -33,6 +33,12 @@ defmodule TicTacToe.CatMarkerTest do
     end
   end
 
+  describe "preview/0" do
+    test "should return a preview" do
+      preview = CatMarker.preview()
+      assert preview
+    end
+  end
 end
 
 # 4 through 11

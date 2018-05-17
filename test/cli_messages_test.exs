@@ -1,9 +1,8 @@
 defmodule TicTacToe.CliMessagesTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import Mox
-  import ExUnit.CaptureIO
   alias TicTacToe.CLI.Messages
-  alias TicTacToe.IOMock
+  alias TicTacToe.{IOMock}
 
   setup :verify_on_exit!
 
@@ -22,6 +21,34 @@ defmodule TicTacToe.CliMessagesTest do
       assert_received({:puts, "The above board is the result."})
       assert_received({:puts, "Now if player 2 entered 4 we would get the above board\n\n\n"})
       assert_received({:gets, "Press enter to continue with the demo\n\n"})
+    end
+  end
+
+  describe "demo_prompt/0" do
+    test "should print 'Would you like a demo? (y/n)'" do
+      expected_msg = "Would you like a demo? (y/n) "
+      IOMock
+      |> expect(:gets, fn data ->
+        send self(), {:gets, data}
+        "y\n"
+      end)
+
+      assert :demo = Messages.demo_prompt()
+      assert_received {:gets, ^expected_msg}
+    end
+
+    test "should return :no_demo for input 'n'" do
+      IOMock
+      |> expect(:gets, fn _ -> "N\n" end)
+
+      assert :no_demo = Messages.demo_prompt()
+    end
+
+    test "should return error tuple for invalid input" do
+      IOMock
+      |> expect(:gets, fn _data -> "invalid input" end)
+
+      assert {:error, "enter y or n\n"} = Messages.demo_prompt()
     end
   end
 
@@ -115,6 +142,152 @@ defmodule TicTacToe.CliMessagesTest do
       assert_received {:puts, ^expected_msg}
       refute_received :restart_fun_called
     end
+  end
+
+  describe "bot_query/0" do
+    test "should ask user if they are playing with a friend" do
+      IOMock
+      |> expect(:gets, fn data ->
+        send self(), {:gets, data}
+        "y"
+      end)
+      Messages.bot_query()
+      assert_received {:gets, "Are you playing with a friend? (y/n) "}
+    end
+
+    test "should return {:ok, :no_bot} when user enters 'y'"
+    do
+      expected = {:ok, :no_bot}
+      IOMock
+      |> expect(:gets, fn _data ->
+        "y\n"
+      end)
+      assert Messages.bot_query() == expected
+    end
+
+    test "should return :with_bot when user enters 'n'"
+    do
+      expected = {:ok, :with_bot}
+      IOMock
+      |> expect(:gets, fn _data ->
+        "N\n"
+      end)
+      assert Messages.bot_query() == expected
+    end
+
+    test "should return {:error, 'enter y or n'} for invalid input" do
+      IOMock
+      |> expect(:gets, fn _ -> "invalid input" end)
+
+      assert {:error, "enter y or n"} = Messages.bot_query()
+    end
+  end
+
+  describe "marker_query/1" do
+    test "should ask user which marker do they want to play as" do
+      IOMock
+      |> expect(:gets, fn data ->
+        send self(), {:gets, data}
+        ""
+      end)
+      msg = "Would you like to choose your own marker? (y/n) "
+      Messages.marker_query(msg)
+      assert_received {:gets, ^msg}
+    end
+
+    test "should return {:ok, :pass} if user enters 'n'" do
+      IOMock
+      |> expect(:gets, fn _ -> "N\n" end)
+      assert {:ok, :rand_marker} = Messages.marker_query("custom msg")
+    end
+
+    test "should return {:ok, :marker_prompt}" do
+      IOMock
+      |> expect(:gets, fn _ -> "y\n" end)
+      assert {:ok, :custom_marker} = Messages.marker_query("custom msg")
+    end
+
+    test "should return {:error, 'enter y or n'} for invalid input" do
+      IOMock
+      |> expect(:gets, fn _ -> "invalid input" end)
+      assert {:error, "enter y or n"} = Messages.marker_query("custom msg")
+    end
+  end
+
+  describe "marker_prompt/1" do
+    setup do
+      markers = Application.fetch_env!(:tic_tac_toe, :markers)
+      msg = "Enter the number of the marker you would like to use: "
+      {:ok, markers: markers, custom_msg: msg}
+    end
+
+    test "should print out marker previews" ,
+    %{markers: markers, custom_msg: msg}
+    do
+      IOMock
+      |> expect(:puts, length(markers), fn data ->
+        send self(), {:puts, data}
+        :ok
+      end)
+      |> expect(:gets, fn _ -> "1" end)
+      {:ok, markers: markers}
+
+      Messages.marker_prompt(markers, msg, :with_prev)
+
+      [{_, m1}, {_, m2}] = markers
+
+      expected1 = m1.preview() <> "1\n"
+      expected2 = m2.preview() <> "2\n"
+
+      assert_received {:puts, ^expected1}
+      assert_received {:puts, ^expected2}
+    end
+
+    test "should ask user to enter in a choice",
+    %{markers: markers, custom_msg: msg}
+    do
+      expected = {:ok, "1"}
+      IOMock
+      |> expect(:gets, fn data ->
+        send self(), {:gets, data}
+        "1"
+      end)
+      |> expect(:puts, length(markers), fn _ -> :ok end)
+
+      received = Messages.marker_prompt(markers, msg, :with_prev)
+
+      assert_received {:gets, "Enter the number of the marker you would like to use: "}
+      assert received == expected
+    end
+
+    test "should return error tuple for invalid input",
+    %{markers: markers, custom_msg: msg}
+    do
+      expected = {:error, "enter a number between 1 and 2"}
+      IOMock
+      |> expect(:puts, length(markers), fn _ -> :ok end)
+      |> expect(:gets, fn _ -> "invalid input"end)
+
+      received = Messages.marker_prompt(markers, msg, :with_prev)
+
+      assert received == expected
+    end
+
+    test "should not print previews if :no_preview is given",
+    %{markers: markers, custom_msg: msg}
+    do
+      expected = {:ok, "2"}
+      IOMock
+      |> expect(:gets, fn data ->
+        send self(), {:gets, data}
+        "2"
+      end)
+
+      received = Messages.marker_prompt(markers, msg, :no_prev)
+
+      assert received == expected
+    end
+
   end
 
   defp win_msg_player1 do

@@ -27,11 +27,6 @@ use Mix.Config
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 #
-config :tic_tac_toe, :markers,
-  yinyang: TicTacToe.TextGraphics.YinYangMarker,
-  cat: TicTacToe.TextGraphics.CatMarker,
-  x: TicTacToe.TextGraphics.XMarker,
-  o: TicTacToe.TextGraphics.OMarker
 
 config :tic_tac_toe, :players,
   default: TicTacToe.DefaultPlayer,

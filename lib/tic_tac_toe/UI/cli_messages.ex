@@ -16,7 +16,9 @@ defmodule TicTacToe.CLI.Messages do
     top to bottom. For example enter the number 1.
     """
     |> @io.gets
-    @io.puts TextGraphics.draw_board(board, markers, label)
+
+    {:ok, board_string} = TextGraphics.draw_board(board, markers, label)
+    @io.puts board_string
 
     @io.puts "The above board is the result."
     @io.gets("Press enter to continue with the demo\n\n")
@@ -24,8 +26,22 @@ defmodule TicTacToe.CLI.Messages do
     {:ok, coord} = Coordinate.new(2, 1)
     {:ok, _, board} = Board.place_mark(board, :o, coord)
 
-    @io.puts TextGraphics.draw_board(board, markers, label)
+    {:ok, board_string} = TextGraphics.draw_board(board, markers, label)
+
+    @io.puts board_string
     @io.puts "Now if player 2 entered 4 we would get the above board\n\n\n"
+  end
+
+  def demo_prompt do
+    @io.gets("Would you like a demo? (y/n) ")
+    |> normalize_input
+    |> case do
+      "y" -> :demo
+
+      "n" -> :no_demo
+
+      _ -> {:error, "enter y or n\n"}
+    end
   end
 
   def end_message(end_state) do
@@ -51,8 +67,7 @@ defmodule TicTacToe.CLI.Messages do
   def prompt_restart(:no_restart, _), do: :ok
   def prompt_restart(:ok, restart_fun) do
     @io.gets("Play again? (y/n)")
-    |> String.trim
-    |> String.downcase
+    |> normalize_input
     |> case do
       "y" ->
         restart_fun.()
@@ -61,6 +76,57 @@ defmodule TicTacToe.CLI.Messages do
       _ ->
         prompt_restart(:ok, restart_fun)
     end
+  end
+
+  def bot_query do
+    @io.gets("Are you playing with a friend? (y/n) ")
+    |> normalize_input
+    |> case do
+      "y" -> {:ok, :no_bot}
+      "n" -> {:ok, :with_bot}
+      _ -> {:error, "enter y or n"}
+    end
+  end
+
+  def marker_query(custom_msg) do
+    @io.gets(custom_msg)
+    |> normalize_input
+    |> case do
+      "n" -> {:ok, :rand_marker}
+      "y" -> {:ok, :custom_marker}
+      _ -> {:error, "enter y or n"}
+    end
+  end
+
+  def marker_prompt(markers, custom_msg, :with_prev) do
+    Enum.reduce(markers, 1, fn {_, marker}, num ->
+      @io.puts(marker.preview() <> "#{num}\n")
+      num + 1
+    end)
+    input = @io.gets(custom_msg) |> normalize_input
+
+    allowable_inputs = Enum.map(1..length(markers), &Integer.to_string/1)
+    case input in allowable_inputs do
+      true -> {:ok, input}
+
+      _otherwise -> {:error, "enter a number between 1 and #{length(markers)}"}
+    end
+  end
+
+  def marker_prompt(markers, custom_msg, :no_prev) do
+    input = @io.gets(custom_msg)
+            |> normalize_input
+    allowable_inputs = Enum.map(1..length(markers), &Integer.to_string/1)
+    case input in allowable_inputs do
+      true -> {:ok, input}
+
+      _otherwise -> {:error, "enter a number between 1 and #{length(markers)}"}
+    end
+  end
+
+  defp normalize_input(input) do
+    String.trim(input)
+    |> String.downcase()
   end
 
   def welcome_msg do

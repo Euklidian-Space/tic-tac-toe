@@ -20,11 +20,11 @@ to install dependencies
 
 ### Prerequisites
 
-You must have elixir installed.  You can find instructions [here][https://elixir-lang.org/install.html]
+You must have elixir installed.  You can find instructions [here](https://elixir-lang.org/install.html)
 
 ### Installing
 
-After cloning the [repo][https://github.com/Euklidian-Space/tic-tac-toe]. go to the project root and enter
+After cloning the [repo](https://github.com/Euklidian-Space/tic-tac-toe). go to the project root and enter
 
 ```
 mix compile
@@ -47,9 +47,9 @@ mix test
 
 ## Authors
 
-* **Gabriel Grover** - *Initial work* - [PurpleBooth](https://github.com/https://github.com/Euklidian-Space)
+* **Gabriel Grover** - *Initial work* - [TicTacToe](https://github.com/https://github.com/Euklidian-Space)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/Euklidian-Space/tic-tac-toe/graphs/contributors) who participated in this project.
 
 ## License
 

@@ -28,7 +28,7 @@ defmodule TicTacToe.CLI do
         IO.puts msg <> "\n"
         demo_prompt()
 
-      # _otherwise -> :ok
+      _otherwise -> :ok
     end
   end
 

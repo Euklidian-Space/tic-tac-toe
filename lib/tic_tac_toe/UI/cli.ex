@@ -117,12 +117,12 @@ defmodule TicTacToe.CLI do
     msg = case query_result do
       { :x, :custom_marker } ->
         """
-        Player 1, choose which maker you would from the above previews by entering
+        Player 1, choose which marker you would from the above previews by entering
         its corresponding number.
         """
       { :o, :custom_marker } ->
         """
-        Player 2, choose which maker you would from the above previews by entering
+        Player 2, choose which marker you would from the above previews by entering
         its corresponding number.
         """
     end

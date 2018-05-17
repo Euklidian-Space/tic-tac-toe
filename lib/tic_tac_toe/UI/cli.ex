@@ -95,7 +95,7 @@ defmodule TicTacToe.CLI do
     ores = Keyword.fetch!(query_results, :o)
     x_choice = do_process_marker_query(prev_or_not, x: xres)
     o_choice = choose(x_choice, ores, fn ->
-      do_process_marker_query(prev_or_not, o: ores)
+      do_process_marker_query(:no_prev, o: ores)
     end)
 
     xmarker = Keyword.values(@markers)

@@ -3,7 +3,6 @@ defmodule GameTest do
   alias TicTacToe.{Game, Board, Rules}
   import TicTacToe.TestHelpers
 
-
   describe "Game on startup" do
     test "application should start Game process with correct starting state"
     do

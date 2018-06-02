@@ -34,10 +34,10 @@ defmodule TicTacToe.Game do
   when is_integer(x) and is_integer(y)
   do
     game_state = get_state(__MODULE__)
-    with {:ok, win_or_not, %Game{} = game_state}
-           <- do_place_mark(game_state, x, y),
-         {:ok, %Game{rules: rules} = game_state}
-           <- chk_win(game_state, win_or_not)
+    with {:ok, win_or_not, %Game{} = game_state} <-
+           do_place_mark(game_state, x, y),
+         {:ok, %Game{rules: rules} = game_state} <-
+           chk_win(game_state, win_or_not)
     do
       case rules.state do
         :game_over ->

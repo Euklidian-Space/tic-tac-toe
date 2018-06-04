@@ -1,84 +1,76 @@
 defmodule TicTacToe.Game do
   alias TicTacToe.{Board, Game, Rules, Coordinate}
   @enforce_keys [:board, :rules]
-  defstruct [:board, :rules, :winner]
+  defstruct [:board, :rules, :winner, :name]
   @behaviour TicTacToe.GameBehaviour
+  use GenServer
 
   @type t :: __MODULE__
 
-  @moduledoc false
-  def start(opts \\ []) do
-    {:ok, board_size} = Keyword.fetch(opts, :board_size)
-    Agent.start(fn ->
-      {:ok, %Game{} = game} = new(board_size)
-      game
-    end, name: __MODULE__)
+  #Public API
+
+  def start_link(name, board_size \\ 3) when is_binary(name), do:
+    GenServer.start_link(__MODULE__, [name: name, board_size: board_size])
+
+  def start_game(game), do:
+    GenServer.call(game, :start_game)
+
+  def place_mark(game, {x, y} = mark)
+  when is_pid(game) and is_number(x) and is_number(y),
+  do: GenServer.call(game, {:place_mark, mark})
+
+  ##GenServer Callbacks
+
+  def init(opts) do
+    name = Keyword.fetch!(opts, :name)
+    board_size = Keyword.fetch!(opts, :board_size)
+    {:ok, new(name, board_size)}
   end
 
-  def start_game do
-    %Game{rules: rules} = current_state = get_state(__MODULE__)
+  def handle_call(:start_game, _from, %Game{rules: rules} = state_data) do
     {:ok, rules} = Rules.check(rules, :add_player)
-    new_state = update_game(__MODULE__, current_state, [rules: rules])
-    {:ok, new_state}
+    new_state = %Game{state_data | rules: rules}
+    reply_success(new_state, :ok)
   end
 
-  def reset_game(opts \\ []) do
-    {:ok, board_size} = Keyword.fetch(opts, :board_size)
-    Agent.update(Game, fn _ ->
-      {:ok, %Game{} = game} = new(board_size)
-      game
-    end)
-  end
-
-  def place_mark(x, y)
-  when is_integer(x) and is_integer(y)
-  do
-    game_state = get_state(__MODULE__)
-    with {:ok, win_or_not, %Game{} = game_state} <-
-           do_place_mark(game_state, x, y),
-         {:ok, %Game{rules: rules} = game_state} <-
-           chk_win(game_state, win_or_not)
+  def handle_call({:place_mark, {x, y}}, _from, %Game{} = state_data) do
+    with {:ok, win_or_not, new_state_data}
+           <- do_place_mark(state_data, x, y),
+         {:ok, new_state_data}
+           <- chk_win(new_state_data, win_or_not)
     do
-      case rules.state do
-        :game_over ->
-          new_state = update_game(__MODULE__, game_state, [rules: rules])
-          {:ok, new_state}
-
-        _otherwise -> next_player(game_state, __MODULE__)
-      end
+      # case rules.state do
+      #   :game_over ->
+      # end
+      reply_success(new_state_data, {:ok, new_state_data})
+    else
+      err -> reply_error(state_data, err)
     end
   end
 
-  defp new(board_size) do
+  ##private helper functions
+
+  defp new(name, board_size) do
     {:ok, board} = Board.new(board_size)
-    {
-      :ok,
-      %Game{
-        board: board,
-        rules: Rules.new(),
-        winner: nil
-      }
+    %Game{
+      board: board,
+      rules: Rules.new(),
+      winner: nil,
+      name: name
     }
   end
 
-  defp get_state(game) when is_atom(game), do:
-    Agent.get(game, &(&1))
+  defp reply_success(state_data, reply), do: {:reply, reply, state_data}
 
-  defp update_game(game, %Game{} = current_state, updates) do
-    new_state = struct(current_state, updates)
-    Agent.update(game, fn %Game{} ->
-      new_state
-    end)
-    new_state
-  end
+  defp reply_error(state_data, err), do: {:reply, err, state_data}
 
   defp do_place_mark(%Game{} = game_state, x, y) do
     with {:ok, coord} <- Coordinate.new(x, y),
          {:ok, win_or_not, board}
-           <- Board.place_mark(game_state.board, get_mark(game_state), coord)
+           <- Board.place_mark(game_state.board, get_marker(game_state), coord)
     do
-      new_game_state = %Game{game_state | board: board}
-      {:ok, win_or_not, new_game_state}
+      {:ok, new_rules} = Rules.check(game_state.rules, :mark)
+      {:ok, win_or_not, %Game{game_state | board: board, rules: new_rules}}
     end
   end
 
@@ -101,32 +93,14 @@ defmodule TicTacToe.Game do
     do: {:ok, %Game{game_state | rules: rules}}
   end
 
-  defp get_mark(%Game{rules: rules}) do
+  defp get_marker(%Game{rules: rules}) do
     case rules.state do
       :player1_turn -> :x
       :player2_turn -> :o
     end
   end
 
-  defp next_player(%Game{rules: rules} = current_game_state, game) do
-    case rules.state do
-      :player1_turn -> control_to_next_player(current_game_state, game, :player1)
-      :player2_turn -> control_to_next_player(current_game_state, game, :player2)
-    end
-  end
-
-  defp control_to_next_player(%Game{rules: rules} = game_state, game, player)
-  when is_atom(game) do
-    with {:ok, new_rules} <- Rules.check(rules, {:mark, player})
-    do
-      new_state =
-        update_game(game, game_state, [rules: new_rules])
-      {:ok, new_state}
-    end
-  end
-
-  defp get_winner(:player1_turn), do: :player1
-  defp get_winner(:player2_turn), do: :player2
-
+  defp get_winner(:player1_turn), do: :player2
+  defp get_winner(:player2_turn), do: :player1
 
 end

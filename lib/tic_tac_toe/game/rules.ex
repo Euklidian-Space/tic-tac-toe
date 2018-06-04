@@ -7,10 +7,10 @@ defmodule TicTacToe.Rules do
   def check(%Rules{state: :initialized} = state, :add_player), do:
     {:ok, %Rules{state | state: :player1_turn}}
 
-  def check(%Rules{state: :player1_turn} = state, {:mark, :player1}), do:
+  def check(%Rules{state: :player1_turn} = state, :mark), do:
     {:ok, %Rules{state | state: :player2_turn}}
 
-  def check(%Rules{state: :player2_turn} = state, {:mark, :player2}), do:
+  def check(%Rules{state: :player2_turn} = state, :mark), do:
     {:ok, %Rules{state | state: :player1_turn}}
 
   def check(%Rules{state: :player1_turn} = state, {:chk_win, :win}), do:

@@ -28,7 +28,7 @@ defmodule RulesTest do
 
     test "should change game state to :player2_turn when player1 makes a mark that does not win" do
       state = %Rules{state: :player1_turn}
-      assert {:ok, %Rules{state: :player2_turn}} = Rules.check(state, {:mark, :player1})
+      assert {:ok, %Rules{state: :player2_turn}} = Rules.check(state, :mark)
     end
 
     test "action {:mark, :player1} should yield error if state was not in :player1_turn" do
@@ -38,7 +38,7 @@ defmodule RulesTest do
 
     test "should change game state to :player1_turn when player2 makes a mark that does not win" do
       state = %Rules{state: :player2_turn}
-      assert {:ok, %Rules{state: :player1_turn}} = Rules.check(state, {:mark, :player2})
+      assert {:ok, %Rules{state: :player1_turn}} = Rules.check(state, :mark)
     end
 
     test "action {:mark, :player2} should yield error if state was not in :player2_turn" do

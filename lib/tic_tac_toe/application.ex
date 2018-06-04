@@ -1,9 +1,13 @@
 defmodule TicTacToe.Application do
   @moduledoc false
   use Application
-  alias TicTacToe.Game
 
   def start(_type, _args) do
-    Game.start(board_size: 3)
+    children = [
+      {Registry, keys: :unique, name: Registry.Game},
+    ]
+
+    opts = [strategy: :one_for_one, name: TicTacToe.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 end

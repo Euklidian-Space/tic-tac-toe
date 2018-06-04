@@ -1,52 +1,71 @@
 defmodule GameTest do
   use ExUnit.Case
-  alias TicTacToe.{Game, Board, Rules}
+  alias TicTacToe.{Game, Board}
   import TicTacToe.TestHelpers
 
-  describe "Game on startup" do
-    test "application should start Game process with correct starting state"
-    do
-      assert %{
-        board: %Board{},
-        rules: %Rules{} = rules
-      } = Agent.get(Game, fn state -> state end)
+  describe "start_link/1" do
+    test "should return {:ok, pid}" do
+      assert {:ok, game} = Game.start_link("some name")
+      assert is_pid(game)
+    end
 
-      assert rules.state == :initialized
+    test "should initialize state as a Game struct" do
+      assert {:ok, game} = Game.start_link("some name")
+      assert %Game{name: received_name, rules: received_rules} = :sys.get_state(game)
+      assert received_name == "some name"
+      assert received_rules.state == :initialized
+    end
+  end
+
+  describe "start_game/1" do
+    setup do
+      {:ok, game} = Game.start_link("game test")
+      {:ok, game: game}
+    end
+
+    test "should return :ok and update rules state",
+    %{game: game}
+    do
+      assert :ok = Game.start_game(game)
+      assert %Game{rules: rules} = :sys.get_state(game)
+      assert rules.state == :player1_turn
     end
   end
 
   describe "place_mark/3" do
-    setup  do
-      {:ok, %Game{} = game_state} = Game.start_game()
-      {:ok, game_state: game_state}
-      on_exit(fn ->
-        Game.reset_game(board_size: 3)
-      end)
+    setup do
+      {:ok, game} = Game.start_link("game test")
+      :ok = Game.start_game(game)
+      {:ok, game: game}
     end
 
-    test "should return the game board and update game state"
+    test "should return the game board and update game state",
+    %{game: game}
     do
-      {:ok, %Game{board: board, rules: rules}} = Game.place_mark(1, 2)
+      {:ok, %Game{board: board, rules: rules}} = Game.place_mark(game, {1, 2})
       assert MapSet.member?(board.x, coord(1, 2))
       assert rules.state == :player2_turn
     end
 
-    test "if mark is a win, then rules state should be :game_over and winner field should be populated" do
-      create_winable_game()
-      assert {:ok, %Game{rules: sm, winner: :player1}} = Game.place_mark(3, 3)
+    test "if mark is a win, then rules state should be :game_over and winner field should be populated",
+    %{game: game} do
+      create_winable_game(game, :sys.get_state(game))
+      assert {:ok, %Game{rules: sm, winner: :player1}} = Game.place_mark(game, {3, 3})
       assert sm.state == :game_over
     end
 
-    test "if given coordinates are invalid should return error tuple" do
-      assert {:error, :invalid_coordinate} = Game.place_mark(10, 1)
+    test "if given coordinates are invalid should return error tuple",
+    %{game: game} do
+      assert {:error, :invalid_coordinate} = Game.place_mark(game, {10, 1})
     end
-
-    test "should alternate between player1_turn and player2_turn if not a winning mark"
+    #
+    test "should alternate between player1_turn and player2_turn if not a winning mark",
+    %{game: game}
     do
-      assert {:ok, %Game{rules: sm}} = Game.place_mark(1, 1)
+      assert {:ok, %Game{rules: sm}} = Game.place_mark(game, {1, 1})
       assert sm.state == :player2_turn
 
-      assert {:ok, %Game{rules: sm, board: board}} = Game.place_mark(3, 3)
+      assert {:ok, %Game{rules: sm, board: board}} = Game.place_mark(game, {3, 3})
       assert sm.state == :player1_turn
 
       assert %Board{x: xs, o: os} = board
@@ -55,24 +74,26 @@ defmodule GameTest do
       assert MapSet.member?(xs, coord(1,1))
     end
 
-    test "if mark is a tie, then rules should be :game_over and winner field should be nil" do
-      create_tie_game()
-      assert {:ok, %Game{rules: sm, winner: nil}} = Game.place_mark(1, 2)
+    test "if mark is a tie, then rules should be :game_over and winner field should be nil",
+    %{game: game}
+    do
+      create_tie_game(game, :sys.get_state(game))
+      assert {:ok, %Game{rules: sm, winner: nil}} = Game.place_mark(game, {1, 2})
       assert sm.state == :game_over
     end
   end
 
-  defp create_winable_game do
-    Game.place_mark(3,1)
-    Game.place_mark(1,1)
-    Game.place_mark(3,2)
-    Game.place_mark(1,2)
+  defp create_winable_game(game, game_state) do
+    [{3, 1}, {1, 1}, {3, 2}, {1, 2}]
+    |> Enum.reduce(game_state, fn mark, _state ->
+      Game.place_mark(game, mark)
+    end)
   end
 
-  defp create_tie_game do
+  defp create_tie_game(game, state_data) do
     [{2, 2}, {3, 2}, {1, 3}, {3, 1}, {3, 3}, {1, 1}, {2, 1}, {2, 3}]
-    |> Enum.each(fn {r, c} ->
-      Game.place_mark(r, c)
+    |> Enum.reduce(state_data, fn mark, _state ->
+      Game.place_mark(game, mark)
     end)
   end
 

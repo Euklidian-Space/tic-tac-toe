@@ -1,9 +1,10 @@
 defmodule TicTacToe.Game do
+  use GenServer, start: {__MODULE__, :start_link, []}, restart: :transient
   alias TicTacToe.{Board, Game, Rules, Coordinate}
   @enforce_keys [:board, :rules]
-  defstruct [:board, :rules, :winner, :name]
   @behaviour TicTacToe.GameBehaviour
-  use GenServer
+  @timeout 60 * 60 * 1000
+  defstruct [:board, :rules, :winner, :name]
 
   @type t :: __MODULE__
 
@@ -19,12 +20,14 @@ defmodule TicTacToe.Game do
   when is_pid(game) and is_number(x) and is_number(y),
   do: GenServer.call(game, {:place_mark, mark})
 
+  def via_tuple(name), do: {:via, Registry, {Registry.Game, name}}
+
   ##GenServer Callbacks
 
   def init(opts) do
     name = Keyword.fetch!(opts, :name)
     board_size = Keyword.fetch!(opts, :board_size)
-    {:ok, new(name, board_size)}
+    {:ok, new(name, board_size), @timeout}
   end
 
   def handle_call(:start_game, _from, %Game{rules: rules} = state_data) do
@@ -60,9 +63,9 @@ defmodule TicTacToe.Game do
     }
   end
 
-  defp reply_success(state_data, reply), do: {:reply, reply, state_data}
+  defp reply_success(state_data, reply), do: {:reply, reply, state_data, @timeout}
 
-  defp reply_error(state_data, err), do: {:reply, err, state_data}
+  defp reply_error(state_data, err), do: {:reply, err, state_data, @timeout}
 
   defp do_place_mark(%Game{} = game_state, x, y) do
     with {:ok, coord} <- Coordinate.new(x, y),
@@ -103,6 +106,5 @@ defmodule TicTacToe.Game do
   defp get_winner(:player1_turn), do: :player2
   defp get_winner(:player2_turn), do: :player1
 
-  defp via_tuple(name), do: {:via, Registry, {Registry.Game, name}}
 
 end

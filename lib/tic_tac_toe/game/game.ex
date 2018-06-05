@@ -10,7 +10,7 @@ defmodule TicTacToe.Game do
   #Public API
 
   def start_link(name, board_size \\ 3) when is_binary(name), do:
-    GenServer.start_link(__MODULE__, [name: name, board_size: board_size])
+    GenServer.start_link(__MODULE__, [name: name, board_size: board_size], name: via_tuple(name))
 
   def start_game(game), do:
     GenServer.call(game, :start_game)
@@ -102,5 +102,7 @@ defmodule TicTacToe.Game do
 
   defp get_winner(:player1_turn), do: :player2
   defp get_winner(:player2_turn), do: :player1
+
+  defp via_tuple(name), do: {:via, Registry, {Registry.Game, name}}
 
 end

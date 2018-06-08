@@ -1,7 +1,7 @@
 defmodule TicTacToe.GameSupervisorTest do 
   use ExUnit.Case
   alias TicTacToe.{GameSupervisor, Game}
-  import TicTacToe.TestHelpers
+  #import TicTacToe.TestHelpers
 
   describe "on Application startup" do
     test "GameSupervisor should be available after startup" do 
@@ -28,10 +28,15 @@ defmodule TicTacToe.GameSupervisorTest do
     test "should terminate the game by the given name", 
     %{game: game} 
     do 
-      via = Game.via_tuple("teset")
+      via = Game.via_tuple("test")
       assert :ok = GameSupervisor.stop_game("test")
       refute Process.alive?(game)
       refute GenServer.whereis(via)
+    end 
+
+    test "should remove ets table entry" do 
+      GameSupervisor.stop_game("test")
+      assert [] = :ets.lookup(:game_state, "test")
     end 
   end 
 end 

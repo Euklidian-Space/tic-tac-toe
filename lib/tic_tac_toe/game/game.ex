@@ -27,6 +27,7 @@ defmodule TicTacToe.Game do
   def init(opts) do
     name = Keyword.fetch!(opts, :name)
     board_size = Keyword.fetch!(opts, :board_size)
+    send self(), {:set_state, name, board_size}
     {:ok, new(name, board_size), @timeout}
   end
 
@@ -42,13 +43,31 @@ defmodule TicTacToe.Game do
          {:ok, new_state_data}
            <- chk_win(new_state_data, win_or_not)
     do
-      # case rules.state do
-      #   :game_over ->
-      # end
       reply_success(new_state_data, {:ok, new_state_data})
     else
       err -> reply_error(state_data, err)
     end
+  end
+
+  def handle_info({:set_state, name, board_size}, _state_data) do
+    state_data = 
+      case :ets.lookup(:game_state, name) do 
+        [] -> new(name, board_size)
+
+        [{_name, data}] -> data
+      end 
+
+    :ets.insert(:game_state, {name, state_data})
+    {:noreply, state_data, @timeout}
+  end 
+
+  def handle_info(:timeout, state_data) do
+    { :stop, {:shutdown, :timeout}, state_data }
+  end 
+
+  def terminate({:shutdown, :timeout}, %Game{name: name}) do 
+    :ets.delete(:game_state, name)
+    :ok
   end
 
   ##private helper functions

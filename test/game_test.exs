@@ -158,6 +158,11 @@ defmodule GameTest do
       assert :ok = Game.terminate({:shutdown, :timeout}, state_data)
       assert [] = :ets.lookup(:game_state, name)
     end 
+
+    test "should return :ok for unrecognized input" do 
+      assert :ok = 
+        Game.terminate({:unrecognized_reason, :unrecognized_msg}, "some data")
+    end 
   end 
 
   defp create_winable_game(game, game_state) do

@@ -70,6 +70,8 @@ defmodule TicTacToe.Game do
     :ok
   end
 
+  def terminate(_, _), do: :ok
+
   ##private helper functions
 
   defp new(name, board_size) do
